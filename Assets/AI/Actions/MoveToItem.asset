@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 701c5d8bd1c704db8b5f6d23b982b4f4, type: 3}
-  m_Name: GoalComplete
+  m_Script: {fileID: 11500000, guid: 00e16f0575d73480ebe7b76bb4ae3939, type: 3}
+  m_Name: MoveToItem
   m_EditorClassIdentifier: 
-  m_Namespace: 
   m_Parameters:
   - m_Name: NPC
     m_RequiredTraits:
@@ -20,13 +19,13 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
     - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
     m_ProhibitedTraits: []
-  - m_Name: Goal
+  - m_Name: Item
     m_RequiredTraits:
-    - {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+    - {fileID: 11400000, guid: 933f02027c7e444f7ab84ce21368225e, type: 2}
     m_ProhibitedTraits: []
-  m_Criteria:
-  - m_Operator: ==
+  m_Preconditions:
+  - m_Operator: '!='
     m_OperandA:
       m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
@@ -34,23 +33,31 @@ MonoBehaviour:
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
-      m_Parameter: Goal
+      m_Parameter: Item
       m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
       m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
-  - m_Operator: ==
+  m_CreatedObjects: []
+  m_RemovedObjects: []
+  m_ObjectModifiers:
+  - m_Operator: =
     m_OperandA:
       m_Parameter: NPC
-      m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
-      m_Parameter: 
-      m_Trait: {fileID: 0}
-      m_TraitFieldId: 0
+      m_Parameter: Item
+      m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
-      m_Value: 2
-  m_TerminalReward: 100
-  m_CustomTerminalRewards: []
+      m_Value: 
+  m_Reward: -0.1
+  m_CustomRewards:
+  - m_Operator: -=
+    m_Typename: Unity.AI.Planner.Navigation.LocationDistance,Unity.AI.Planner
+    m_Parameters:
+    - NPC
+    - Item

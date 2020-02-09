@@ -10,18 +10,18 @@ using AI.Planner.Domains;
 namespace AI.Planner.Actions.MyPlan
 {
     [BurstCompile]
-    struct MoveToGoal : IJobParallelForDefer
+    struct MoveToItem : IJobParallelForDefer
     {
         public Guid ActionGuid;
         
         const int k_NPCIndex = 0;
-        const int k_GoalIndex = 1;
+        const int k_ItemIndex = 1;
         const int k_MaxArguments = 2;
 
         [ReadOnly] NativeArray<StateEntityKey> m_StatesToExpand;
         StateDataContext m_StateDataContext;
 
-        internal MoveToGoal(Guid guid, NativeList<StateEntityKey> statesToExpand, StateDataContext stateDataContext)
+        internal MoveToItem(Guid guid, NativeList<StateEntityKey> statesToExpand, StateDataContext stateDataContext)
         {
             ActionGuid = guid;
             m_StatesToExpand = statesToExpand.AsDeferredJobArray();
@@ -33,8 +33,8 @@ namespace AI.Planner.Actions.MyPlan
             
             if (string.Equals(parameterName, "NPC", StringComparison.OrdinalIgnoreCase))
                  return k_NPCIndex;
-            if (string.Equals(parameterName, "Goal", StringComparison.OrdinalIgnoreCase))
-                 return k_GoalIndex;
+            if (string.Equals(parameterName, "Item", StringComparison.OrdinalIgnoreCase))
+                 return k_ItemIndex;
 
             return -1;
         }
@@ -42,11 +42,11 @@ namespace AI.Planner.Actions.MyPlan
         void GenerateArgumentPermutations(StateData stateData, NativeList<ActionKey> argumentPermutations)
         {
             var NPCFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),  };
-            var GoalFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Goal>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),  };
+            var ItemFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.Item>(),  };
             var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
-            var GoalObjectIndices = new NativeList<int>(2, Allocator.Temp);
-            stateData.GetTraitBasedObjectIndices(GoalObjectIndices, GoalFilter);
+            var ItemObjectIndices = new NativeList<int>(2, Allocator.Temp);
+            stateData.GetTraitBasedObjectIndices(ItemObjectIndices, ItemFilter);
             var LocationBuffer = stateData.LocationBuffer;
             
             for (int i0 = 0; i0 < NPCObjectIndices.Length; i0++)
@@ -55,26 +55,26 @@ namespace AI.Planner.Actions.MyPlan
                 var NPCObject = stateData.TraitBasedObjects[NPCIndex];
                 
             
-            for (int i1 = 0; i1 < GoalObjectIndices.Length; i1++)
+            for (int i1 = 0; i1 < ItemObjectIndices.Length; i1++)
             {
-                var GoalIndex = GoalObjectIndices[i1];
-                var GoalObject = stateData.TraitBasedObjects[GoalIndex];
+                var ItemIndex = ItemObjectIndices[i1];
+                var ItemObject = stateData.TraitBasedObjects[ItemIndex];
                 
-                if (!(LocationBuffer[NPCObject.LocationIndex].Position != LocationBuffer[GoalObject.LocationIndex].Position))
+                if (!(LocationBuffer[NPCObject.LocationIndex].Position != LocationBuffer[ItemObject.LocationIndex].Position))
                     continue;
 
                 var actionKey = new ActionKey(k_MaxArguments) {
                                                         ActionGuid = ActionGuid,
                                                        [k_NPCIndex] = NPCIndex,
-                                                       [k_GoalIndex] = GoalIndex,
+                                                       [k_ItemIndex] = ItemIndex,
                                                     };
                 argumentPermutations.Add(actionKey);
             }
             }
             NPCObjectIndices.Dispose();
-            GoalObjectIndices.Dispose();
+            ItemObjectIndices.Dispose();
             NPCFilter.Dispose();
-            GoalFilter.Dispose();
+            ItemFilter.Dispose();
         }
 
         StateTransitionInfoPair<StateEntityKey, ActionKey, StateTransitionInfo> ApplyEffects(ActionKey action, StateEntityKey originalStateEntityKey)
@@ -82,13 +82,13 @@ namespace AI.Planner.Actions.MyPlan
             var originalState = m_StateDataContext.GetStateData(originalStateEntityKey);
             var originalStateObjectBuffer = originalState.TraitBasedObjects;
             var originalNPCObject = originalStateObjectBuffer[action[k_NPCIndex]];
-            var originalGoalObject = originalStateObjectBuffer[action[k_GoalIndex]];
+            var originalItemObject = originalStateObjectBuffer[action[k_ItemIndex]];
 
             var newState = m_StateDataContext.CopyStateData(originalState);
             var newLocationBuffer = newState.LocationBuffer;
             {
                     var @Location = newLocationBuffer[originalNPCObject.LocationIndex];
-                    @Location.Position = newLocationBuffer[originalGoalObject.LocationIndex].Position;
+                    @Location.Position = newLocationBuffer[originalItemObject.LocationIndex].Position;
                     newLocationBuffer[originalNPCObject.LocationIndex] = @Location;
             }
 
@@ -123,15 +123,15 @@ namespace AI.Planner.Actions.MyPlan
             var argumentPermutations = new NativeList<ActionKey>(4, Allocator.Temp);
             GenerateArgumentPermutations(stateData, argumentPermutations);
 
-            var transitionInfo = new NativeArray<MoveToGoalFixupReference>(argumentPermutations.Length, Allocator.Temp);
+            var transitionInfo = new NativeArray<MoveToItemFixupReference>(argumentPermutations.Length, Allocator.Temp);
             for (var i = 0; i < argumentPermutations.Length; i++)
             {
-                transitionInfo[i] = new MoveToGoalFixupReference { TransitionInfo = ApplyEffects(argumentPermutations[i], stateEntityKey) };
+                transitionInfo[i] = new MoveToItemFixupReference { TransitionInfo = ApplyEffects(argumentPermutations[i], stateEntityKey) };
             }
 
             // fixups
             var stateEntity = stateEntityKey.Entity;
-            var fixupBuffer = m_StateDataContext.EntityCommandBuffer.AddBuffer<MoveToGoalFixupReference>(jobIndex, stateEntity);
+            var fixupBuffer = m_StateDataContext.EntityCommandBuffer.AddBuffer<MoveToItemFixupReference>(jobIndex, stateEntity);
             fixupBuffer.CopyFrom(transitionInfo);
 
             transitionInfo.Dispose();
@@ -144,14 +144,14 @@ namespace AI.Planner.Actions.MyPlan
             return state.GetTraitOnObjectAtIndex<T>(action[k_NPCIndex]);
         }
         
-        public static T GetGoalTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
+        public static T GetItemTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
         {
-            return state.GetTraitOnObjectAtIndex<T>(action[k_GoalIndex]);
+            return state.GetTraitOnObjectAtIndex<T>(action[k_ItemIndex]);
         }
         
     }
 
-    public struct MoveToGoalFixupReference : IBufferElementData
+    public struct MoveToItemFixupReference : IBufferElementData
     {
         internal StateTransitionInfoPair<StateEntityKey, ActionKey, StateTransitionInfo> TransitionInfo;
     }

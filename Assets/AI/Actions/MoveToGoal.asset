@@ -17,6 +17,7 @@ MonoBehaviour:
     m_RequiredTraits:
     - {fileID: 11400000, guid: 3f130894604de4e62a1cc7081fbc60a2, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+    - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
     m_ProhibitedTraits: []
   - m_Name: Goal
     m_RequiredTraits:
@@ -53,5 +54,10 @@ MonoBehaviour:
       m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
-  m_Reward: 0
-  m_CustomRewards: []
+  m_Reward: -0.1
+  m_CustomRewards:
+  - m_Operator: -=
+    m_Typename: Unity.AI.Planner.Navigation.LocationDistance,Unity.AI.Planner
+    m_Parameters:
+    - NPC
+    - Goal

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MyPlan
   m_EditorClassIdentifier: 
   m_ActionDefinitions:
+  - {fileID: 11400000, guid: ba431e5a3c0994c9c9cb58739cc41c77, type: 2}
+  - {fileID: 11400000, guid: d25f01bbfa7a14298911a28f31c3d812, type: 2}
   - {fileID: 11400000, guid: 69e96b26b3b2448e395fcb4ef7a57423, type: 2}
   m_StateTerminationDefinitions:
   - {fileID: 11400000, guid: d887469e7fd9b42c3968c0670771f77b, type: 2}

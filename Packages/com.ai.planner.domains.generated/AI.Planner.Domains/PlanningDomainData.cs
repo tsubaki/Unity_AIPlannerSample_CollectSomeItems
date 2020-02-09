@@ -31,20 +31,24 @@ namespace AI.Planner.Domains
         static TraitArrayIndex()
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
-            if (typeIndex == TypeManager.GetTypeIndex<Goal>())
+            if (typeIndex == TypeManager.GetTypeIndex<Baggage>())
                 Index = 0;
-            else if (typeIndex == TypeManager.GetTypeIndex<Npc>())
+            else if (typeIndex == TypeManager.GetTypeIndex<Goal>())
                 Index = 1;
-            else if (typeIndex == TypeManager.GetTypeIndex<Location>())
+            else if (typeIndex == TypeManager.GetTypeIndex<Item>())
                 Index = 2;
-            else if (typeIndex == TypeManager.GetTypeIndex<Moveable>())
+            else if (typeIndex == TypeManager.GetTypeIndex<Npc>())
                 Index = 3;
+            else if (typeIndex == TypeManager.GetTypeIndex<Location>())
+                Index = 4;
+            else if (typeIndex == TypeManager.GetTypeIndex<Moveable>())
+                Index = 5;
         }
     }
 
     public struct TraitBasedObject : ITraitBasedObject
     {
-        public int Length => 4;
+        public int Length => 6;
 
         public byte this[int i]
         {
@@ -53,12 +57,16 @@ namespace AI.Planner.Domains
                 switch (i)
                 {
                     case 0:
-                        return GoalIndex;
+                        return BaggageIndex;
                     case 1:
-                        return NpcIndex;
+                        return GoalIndex;
                     case 2:
-                        return LocationIndex;
+                        return ItemIndex;
                     case 3:
+                        return NpcIndex;
+                    case 4:
+                        return LocationIndex;
+                    case 5:
                         return MoveableIndex;
                 }
 
@@ -69,15 +77,21 @@ namespace AI.Planner.Domains
                 switch (i)
                 {
                     case 0:
-                        GoalIndex = value;
+                        BaggageIndex = value;
                         break;
                     case 1:
-                        NpcIndex = value;
+                        GoalIndex = value;
                         break;
                     case 2:
-                        LocationIndex = value;
+                        ItemIndex = value;
                         break;
                     case 3:
+                        NpcIndex = value;
+                        break;
+                    case 4:
+                        LocationIndex = value;
+                        break;
+                    case 5:
                         MoveableIndex = value;
                         break;
                 }
@@ -88,20 +102,26 @@ namespace AI.Planner.Domains
 
         public static TraitBasedObject Default => new TraitBasedObject
         {
+            BaggageIndex = Unset,
             GoalIndex = Unset,
+            ItemIndex = Unset,
             NpcIndex = Unset,
             LocationIndex = Unset,
             MoveableIndex = Unset,
         };
 
 
+        public byte BaggageIndex;
         public byte GoalIndex;
+        public byte ItemIndex;
         public byte NpcIndex;
         public byte LocationIndex;
         public byte MoveableIndex;
 
 
+        static readonly int s_BaggageTypeIndex = TypeManager.GetTypeIndex<Baggage>();
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
+        static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
         static readonly int s_LocationTypeIndex = TypeManager.GetTypeIndex<Location>();
         static readonly int s_MoveableTypeIndex = TypeManager.GetTypeIndex<Moveable>();
@@ -136,9 +156,19 @@ namespace AI.Planner.Domains
             {
                 var t = componentTypes[i];
 
-                if (t.TypeIndex == s_GoalTypeIndex)
+                if (t.TypeIndex == s_BaggageTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ BaggageIndex == Unset)
+                        return false;
+                }
+                else if (t.TypeIndex == s_GoalTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GoalIndex == Unset)
+                        return false;
+                }
+                else if (t.TypeIndex == s_ItemTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ ItemIndex == Unset)
                         return false;
                 }
                 else if (t.TypeIndex == s_NpcTypeIndex)
@@ -169,9 +199,19 @@ namespace AI.Planner.Domains
             {
                 var t = componentTypes[i];
 
-                if (t.TypeIndex == s_GoalTypeIndex)
+                if (t.TypeIndex == s_BaggageTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ BaggageIndex == Unset)
+                        return false;
+                }
+                else if (t.TypeIndex == s_GoalTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GoalIndex == Unset)
+                        return false;
+                }
+                else if (t.TypeIndex == s_ItemTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ ItemIndex == Unset)
                         return false;
                 }
                 else if (t.TypeIndex == s_NpcTypeIndex)
@@ -203,12 +243,16 @@ namespace AI.Planner.Domains
         public DynamicBuffer<TraitBasedObject> TraitBasedObjects;
         public DynamicBuffer<TraitBasedObjectId> TraitBasedObjectIds;
 
+        public DynamicBuffer<Baggage> BaggageBuffer;
         public DynamicBuffer<Goal> GoalBuffer;
+        public DynamicBuffer<Item> ItemBuffer;
         public DynamicBuffer<Npc> NpcBuffer;
         public DynamicBuffer<Location> LocationBuffer;
         public DynamicBuffer<Moveable> MoveableBuffer;
 
+        static readonly int s_BaggageTypeIndex = TypeManager.GetTypeIndex<Baggage>();
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
+        static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
         static readonly int s_LocationTypeIndex = TypeManager.GetTypeIndex<Location>();
         static readonly int s_MoveableTypeIndex = TypeManager.GetTypeIndex<Moveable>();
@@ -219,7 +263,9 @@ namespace AI.Planner.Domains
             TraitBasedObjects = system.GetBufferFromEntity<TraitBasedObject>(!readWrite)[stateEntity];
             TraitBasedObjectIds = system.GetBufferFromEntity<TraitBasedObjectId>(!readWrite)[stateEntity];
 
+            BaggageBuffer = system.GetBufferFromEntity<Baggage>(!readWrite)[stateEntity];
             GoalBuffer = system.GetBufferFromEntity<Goal>(!readWrite)[stateEntity];
+            ItemBuffer = system.GetBufferFromEntity<Item>(!readWrite)[stateEntity];
             NpcBuffer = system.GetBufferFromEntity<Npc>(!readWrite)[stateEntity];
             LocationBuffer = system.GetBufferFromEntity<Location>(!readWrite)[stateEntity];
             MoveableBuffer = system.GetBufferFromEntity<Moveable>(!readWrite)[stateEntity];
@@ -231,7 +277,9 @@ namespace AI.Planner.Domains
             TraitBasedObjects = entityCommandBuffer.AddBuffer<TraitBasedObject>(jobIndex, stateEntity);
             TraitBasedObjectIds = entityCommandBuffer.AddBuffer<TraitBasedObjectId>(jobIndex, stateEntity);
 
+            BaggageBuffer = entityCommandBuffer.AddBuffer<Baggage>(jobIndex, stateEntity);
             GoalBuffer = entityCommandBuffer.AddBuffer<Goal>(jobIndex, stateEntity);
+            ItemBuffer = entityCommandBuffer.AddBuffer<Item>(jobIndex, stateEntity);
             NpcBuffer = entityCommandBuffer.AddBuffer<Npc>(jobIndex, stateEntity);
             LocationBuffer = entityCommandBuffer.AddBuffer<Location>(jobIndex, stateEntity);
             MoveableBuffer = entityCommandBuffer.AddBuffer<Moveable>(jobIndex, stateEntity);
@@ -245,8 +293,12 @@ namespace AI.Planner.Domains
             var traitBasedObjectIds = entityCommandBuffer.SetBuffer<TraitBasedObjectId>(jobIndex, stateEntity);
             traitBasedObjectIds.CopyFrom(TraitBasedObjectIds.AsNativeArray());
 
+            var Baggages = entityCommandBuffer.SetBuffer<Baggage>(jobIndex, stateEntity);
+            Baggages.CopyFrom(BaggageBuffer.AsNativeArray());
             var Goals = entityCommandBuffer.SetBuffer<Goal>(jobIndex, stateEntity);
             Goals.CopyFrom(GoalBuffer.AsNativeArray());
+            var Items = entityCommandBuffer.SetBuffer<Item>(jobIndex, stateEntity);
+            Items.CopyFrom(ItemBuffer.AsNativeArray());
             var Npcs = entityCommandBuffer.SetBuffer<Npc>(jobIndex, stateEntity);
             Npcs.CopyFrom(NpcBuffer.AsNativeArray());
             var Locations = entityCommandBuffer.SetBuffer<Location>(jobIndex, stateEntity);
@@ -260,7 +312,9 @@ namespace AI.Planner.Domains
                 TraitBasedObjects = traitBasedObjects,
                 TraitBasedObjectIds = traitBasedObjectIds,
 
+                BaggageBuffer = Baggages,
                 GoalBuffer = Goals,
+                ItemBuffer = Items,
                 NpcBuffer = Npcs,
                 LocationBuffer = Locations,
                 MoveableBuffer = Moveables,
@@ -278,10 +332,20 @@ namespace AI.Planner.Domains
             for (int i = 0; i < types.Length; i++)
             {
                 var t = types[i];
-                if (t.TypeIndex == s_GoalTypeIndex)
+                if (t.TypeIndex == s_BaggageTypeIndex)
+                {
+                    BaggageBuffer.Add(default);
+                    traitBasedObject.BaggageIndex = (byte) (BaggageBuffer.Length - 1);
+                }
+                else if (t.TypeIndex == s_GoalTypeIndex)
                 {
                     GoalBuffer.Add(default);
                     traitBasedObject.GoalIndex = (byte) (GoalBuffer.Length - 1);
+                }
+                else if (t.TypeIndex == s_ItemTypeIndex)
+                {
+                    ItemBuffer.Add(default);
+                    traitBasedObject.ItemIndex = (byte) (ItemBuffer.Length - 1);
                 }
                 else if (t.TypeIndex == s_NpcTypeIndex)
                 {
@@ -312,8 +376,12 @@ namespace AI.Planner.Domains
 
         public void SetTraitOnObject(ITrait trait, ref TraitBasedObject traitBasedObject)
         {
-            if (trait is Goal GoalTrait)
+            if (trait is Baggage BaggageTrait)
+                SetTraitOnObject(BaggageTrait, ref traitBasedObject);
+            else if (trait is Goal GoalTrait)
                 SetTraitOnObject(GoalTrait, ref traitBasedObject);
+            else if (trait is Item ItemTrait)
+                SetTraitOnObject(ItemTrait, ref traitBasedObject);
             else if (trait is Npc NpcTrait)
                 SetTraitOnObject(NpcTrait, ref traitBasedObject);
             else if (trait is Location LocationTrait)
@@ -412,7 +480,9 @@ namespace AI.Planner.Domains
                 return false;
 
 
+            RemoveTraitOnObject<Baggage>(ref traitBasedObject);
             RemoveTraitOnObject<Goal>(ref traitBasedObject);
+            RemoveTraitOnObject<Item>(ref traitBasedObject);
             RemoveTraitOnObject<Npc>(ref traitBasedObject);
             RemoveTraitOnObject<Location>(ref traitBasedObject);
             RemoveTraitOnObject<Moveable>(ref traitBasedObject);
@@ -499,7 +569,9 @@ namespace AI.Planner.Domains
 
         public bool RemoveTraitBasedObjectAtIndex(int traitBasedObjectIndex)
         {
+            RemoveTraitOnObjectAtIndex<Baggage>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Goal>(traitBasedObjectIndex);
+            RemoveTraitOnObjectAtIndex<Item>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Npc>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Location>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Moveable>(traitBasedObjectIndex);
@@ -592,12 +664,16 @@ namespace AI.Planner.Domains
             switch (index)
             {
                 case 0:
-                    return GoalBuffer.Reinterpret<T>();
+                    return BaggageBuffer.Reinterpret<T>();
                 case 1:
-                    return NpcBuffer.Reinterpret<T>();
+                    return GoalBuffer.Reinterpret<T>();
                 case 2:
-                    return LocationBuffer.Reinterpret<T>();
+                    return ItemBuffer.Reinterpret<T>();
                 case 3:
+                    return NpcBuffer.Reinterpret<T>();
+                case 4:
+                    return LocationBuffer.Reinterpret<T>();
+                case 5:
                     return MoveableBuffer.Reinterpret<T>();
             }
 
@@ -611,7 +687,9 @@ namespace AI.Planner.Domains
 
             // Easy check is to make sure each state has the same number of domain objects
             if (TraitBasedObjects.Length != rhsState.TraitBasedObjects.Length
+                || BaggageBuffer.Length != rhsState.BaggageBuffer.Length
                 || GoalBuffer.Length != rhsState.GoalBuffer.Length
+                || ItemBuffer.Length != rhsState.ItemBuffer.Length
                 || NpcBuffer.Length != rhsState.NpcBuffer.Length
                 || LocationBuffer.Length != rhsState.LocationBuffer.Length
                 || MoveableBuffer.Length != rhsState.MoveableBuffer.Length)
@@ -688,6 +766,12 @@ namespace AI.Planner.Domains
             if (!traitBasedObjectLHS.HasSameTraits(traitBasedObjectRHS))
                 return false;
 
+            if (traitBasedObjectLHS.BaggageIndex != TraitBasedObject.Unset
+                && !BaggageTraitAttributesEqual(BaggageBuffer[traitBasedObjectLHS.BaggageIndex], rhsState.BaggageBuffer[traitBasedObjectRHS.BaggageIndex]))
+                return false;
+
+
+
 
 
             if (traitBasedObjectLHS.LocationIndex != TraitBasedObject.Unset
@@ -697,6 +781,12 @@ namespace AI.Planner.Domains
 
 
             return true;
+        }
+        
+        bool BaggageTraitAttributesEqual(Baggage one, Baggage two)
+        {
+            return
+                    one.ItemCount == two.ItemCount;
         }
         
         bool LocationTraitAttributesEqual(Location one, Location two)
@@ -725,9 +815,22 @@ namespace AI.Planner.Domains
                 stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
             }
 
+            for (int i = 0; i < BaggageBuffer.Length; i++)
+            {
+                var element = BaggageBuffer[i];
+                var value = 397
+                    ^ element.ItemCount.GetHashCode();
+                stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
+            }
             for (int i = 0; i < GoalBuffer.Length; i++)
             {
                 var element = GoalBuffer[i];
+                var value = 397;
+                stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
+            }
+            for (int i = 0; i < ItemBuffer.Length; i++)
+            {
+                var element = ItemBuffer[i];
                 var value = 397;
                 stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
             }
@@ -768,7 +871,15 @@ namespace AI.Planner.Domains
 
                 var traitIndex = traitBasedObject[i++];
                 if (traitIndex != TraitBasedObject.Unset)
+                    sb.AppendLine(BaggageBuffer[traitIndex].ToString());
+
+                traitIndex = traitBasedObject[i++];
+                if (traitIndex != TraitBasedObject.Unset)
                     sb.AppendLine(GoalBuffer[traitIndex].ToString());
+
+                traitIndex = traitBasedObject[i++];
+                if (traitIndex != TraitBasedObject.Unset)
+                    sb.AppendLine(ItemBuffer[traitIndex].ToString());
 
                 traitIndex = traitBasedObject[i++];
                 if (traitIndex != TraitBasedObject.Unset)
@@ -798,7 +909,9 @@ namespace AI.Planner.Domains
         [ReadOnly] public BufferFromEntity<TraitBasedObject> TraitBasedObjects;
         [ReadOnly] public BufferFromEntity<TraitBasedObjectId> TraitBasedObjectIds;
 
+        [ReadOnly] public BufferFromEntity<Baggage> BaggageData;
         [ReadOnly] public BufferFromEntity<Goal> GoalData;
+        [ReadOnly] public BufferFromEntity<Item> ItemData;
         [ReadOnly] public BufferFromEntity<Npc> NpcData;
         [ReadOnly] public BufferFromEntity<Location> LocationData;
         [ReadOnly] public BufferFromEntity<Moveable> MoveableData;
@@ -809,7 +922,9 @@ namespace AI.Planner.Domains
             TraitBasedObjects = system.GetBufferFromEntity<TraitBasedObject>(true);
             TraitBasedObjectIds = system.GetBufferFromEntity<TraitBasedObjectId>(true);
 
+            BaggageData = system.GetBufferFromEntity<Baggage>(true);
             GoalData = system.GetBufferFromEntity<Goal>(true);
+            ItemData = system.GetBufferFromEntity<Item>(true);
             NpcData = system.GetBufferFromEntity<Npc>(true);
             LocationData = system.GetBufferFromEntity<Location>(true);
             MoveableData = system.GetBufferFromEntity<Moveable>(true);
@@ -828,7 +943,9 @@ namespace AI.Planner.Domains
                 TraitBasedObjects = TraitBasedObjects[stateEntity],
                 TraitBasedObjectIds = TraitBasedObjectIds[stateEntity],
 
+                BaggageBuffer = BaggageData[stateEntity],
                 GoalBuffer = GoalData[stateEntity],
+                ItemBuffer = ItemData[stateEntity],
                 NpcBuffer = NpcData[stateEntity],
                 LocationBuffer = LocationData[stateEntity],
                 MoveableBuffer = MoveableData[stateEntity],
@@ -878,7 +995,9 @@ namespace AI.Planner.Domains
         protected override void OnCreate()
         {
             m_StateArchetype = EntityManager.CreateArchetype(typeof(State), typeof(TraitBasedObject), typeof(TraitBasedObjectId), typeof(HashCode),
+                typeof(Baggage),
                 typeof(Goal),
+                typeof(Item),
                 typeof(Npc),
                 typeof(Location),
                 typeof(Moveable));

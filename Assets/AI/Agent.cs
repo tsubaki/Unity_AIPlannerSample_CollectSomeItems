@@ -19,4 +19,10 @@ public class Agent : MonoBehaviour
 
         agent.isStopped = true;
     }
+
+    public void TakeItem(GameObject key)
+    {
+        Debug.Log("take a key");
+        Destroy(key);
+    }    
 }
