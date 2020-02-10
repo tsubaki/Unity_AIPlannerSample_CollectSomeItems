@@ -48,12 +48,16 @@ namespace AI.Planner.Actions.MyPlan
             var ItemObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(ItemObjectIndices, ItemFilter);
             var LocationBuffer = stateData.LocationBuffer;
+            var BaggageBuffer = stateData.BaggageBuffer;
             
             for (int i0 = 0; i0 < BuggageObjectIndices.Length; i0++)
             {
                 var BuggageIndex = BuggageObjectIndices[i0];
                 var BuggageObject = stateData.TraitBasedObjects[BuggageIndex];
                 
+                
+                if (!(BaggageBuffer[BuggageObject.BaggageIndex].ItemCount == 0))
+                    continue;
             
             for (int i1 = 0; i1 < ItemObjectIndices.Length; i1++)
             {
@@ -62,6 +66,7 @@ namespace AI.Planner.Actions.MyPlan
                 
                 if (!(LocationBuffer[BuggageObject.LocationIndex].Position == LocationBuffer[ItemObject.LocationIndex].Position))
                     continue;
+                
 
                 var actionKey = new ActionKey(k_MaxArguments) {
                                                         ActionGuid = ActionGuid,
@@ -87,7 +92,7 @@ namespace AI.Planner.Actions.MyPlan
             var newBaggageBuffer = newState.BaggageBuffer;
             {
                     var @Baggage = newBaggageBuffer[originalBuggageObject.BaggageIndex];
-                    @Baggage.@ItemCount += 1;
+                    @Baggage.@ItemCount = 1;
                     newBaggageBuffer[originalBuggageObject.BaggageIndex] = @Baggage;
             }
 
@@ -103,7 +108,7 @@ namespace AI.Planner.Actions.MyPlan
 
         float Reward(StateData originalState, ActionKey action, StateData newState)
         {
-            var reward = 1f;
+            var reward = -0.1f;
 
             return reward;
         }

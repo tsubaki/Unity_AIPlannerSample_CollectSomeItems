@@ -20,9 +20,14 @@ public class Agent : MonoBehaviour
         agent.isStopped = true;
     }
 
-    public void TakeItem(GameObject key)
+    public void TakeItem(GameObject self, GameObject key)
     {
+        key.transform.parent = self.transform;
         Debug.Log("take a key");
-        Destroy(key);
-    }    
+    }
+
+    public void PutOn(GameObject self)
+    {
+        self.transform.DetachChildren();
+    }
 }

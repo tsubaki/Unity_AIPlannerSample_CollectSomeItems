@@ -41,6 +41,8 @@ namespace AI.Planner.Actions.MyPlan
             { ActionScheduler.MoveToItemGuid, nameof(MoveToItem) },
             { ActionScheduler.TakeAItemGuid, nameof(TakeAItem) },
             { ActionScheduler.MoveToGoalGuid, nameof(MoveToGoal) },
+            { ActionScheduler.MoveToSwitchGuid, nameof(MoveToSwitch) },
+            { ActionScheduler.TurnOnGateGuid, nameof(TurnOnGate) },
         };
 
         public override string GetActionName(IActionKey actionKey)
@@ -70,6 +72,12 @@ namespace AI.Planner.Actions.MyPlan
                     break;
                 case var actionGuid when actionGuid == ActionScheduler.MoveToGoalGuid:
                     actionName = nameof(MoveToGoal);
+                    break;
+                case var actionGuid when actionGuid == ActionScheduler.MoveToSwitchGuid:
+                    actionName = nameof(MoveToSwitch);
+                    break;
+                case var actionGuid when actionGuid == ActionScheduler.TurnOnGateGuid:
+                    actionName = nameof(TurnOnGate);
                     break;
             }
 
@@ -101,6 +109,12 @@ namespace AI.Planner.Actions.MyPlan
                     case nameof(MoveToGoal):
                         parameterIndex = MoveToGoal.GetIndexForParameterName(traitBasedObjectName);
                         break;
+                    case nameof(MoveToSwitch):
+                        parameterIndex = MoveToSwitch.GetIndexForParameterName(traitBasedObjectName);
+                        break;
+                    case nameof(TurnOnGate):
+                        parameterIndex = TurnOnGate.GetIndexForParameterName(traitBasedObjectName);
+                        break;
                 }
 
                 var traitBasedObjectIndex = actionKey[parameterIndex];
@@ -127,6 +141,14 @@ namespace AI.Planner.Actions.MyPlan
                         case nameof(Goal):
                             var traitGoal = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Goal>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitGoal.GetField(split[2]) : traitGoal;
+                            break;
+                        case nameof(GateSwitch):
+                            var traitGateSwitch = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.GateSwitch>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitGateSwitch.GetField(split[2]) : traitGateSwitch;
+                            break;
+                        case nameof(Gate):
+                            var traitGate = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Gate>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitGate.GetField(split[2]) : traitGate;
                             break;
                     }
                 }

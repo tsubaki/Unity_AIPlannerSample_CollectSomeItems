@@ -16,7 +16,7 @@ namespace AI.Planner.Domains
             var GoalObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(GoalObjectIndices, GoalFilter);
             var LocationBuffer = stateData.LocationBuffer;
-            var BaggageBuffer = stateData.BaggageBuffer;
+            var GoalBuffer = stateData.GoalBuffer;
             
             for (int i0 = 0; i0 < NPCObjectIndices.Length; i0++)
             {
@@ -24,8 +24,6 @@ namespace AI.Planner.Domains
                 var NPCObject = stateData.TraitBasedObjects[NPCIndex];
                 
                 
-                if (!(BaggageBuffer[NPCObject.BaggageIndex].ItemCount == 2))
-                    continue;
             
             for (int i1 = 0; i1 < GoalObjectIndices.Length; i1++)
             {
@@ -35,6 +33,8 @@ namespace AI.Planner.Domains
                 if (!(LocationBuffer[NPCObject.LocationIndex].Position == LocationBuffer[GoalObject.LocationIndex].Position))
                     continue;
                 
+                if (!(GoalBuffer[GoalObject.GoalIndex].IsDone == true))
+                    continue;
                 NPCFilter.Dispose();
                 GoalFilter.Dispose();
                 return true;
