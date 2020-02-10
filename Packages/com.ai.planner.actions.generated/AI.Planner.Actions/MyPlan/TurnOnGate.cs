@@ -10,19 +10,19 @@ using AI.Planner.Domains;
 namespace AI.Planner.Actions.MyPlan
 {
     [BurstCompile]
-    struct MoveToGoal : IJobParallelForDefer
+    struct TurnOnGate : IJobParallelForDefer
     {
         public Guid ActionGuid;
         
         const int k_NPCIndex = 0;
-        const int k_GoalIndex = 1;
+        const int k_GateIndex = 1;
         const int k_GameManagerIndex = 2;
         const int k_MaxArguments = 3;
 
         [ReadOnly] NativeArray<StateEntityKey> m_StatesToExpand;
         StateDataContext m_StateDataContext;
 
-        internal MoveToGoal(Guid guid, NativeList<StateEntityKey> statesToExpand, StateDataContext stateDataContext)
+        internal TurnOnGate(Guid guid, NativeList<StateEntityKey> statesToExpand, StateDataContext stateDataContext)
         {
             ActionGuid = guid;
             m_StatesToExpand = statesToExpand.AsDeferredJobArray();
@@ -34,8 +34,8 @@ namespace AI.Planner.Actions.MyPlan
             
             if (string.Equals(parameterName, "NPC", StringComparison.OrdinalIgnoreCase))
                  return k_NPCIndex;
-            if (string.Equals(parameterName, "Goal", StringComparison.OrdinalIgnoreCase))
-                 return k_GoalIndex;
+            if (string.Equals(parameterName, "Gate", StringComparison.OrdinalIgnoreCase))
+                 return k_GateIndex;
             if (string.Equals(parameterName, "GameManager", StringComparison.OrdinalIgnoreCase))
                  return k_GameManagerIndex;
 
@@ -45,16 +45,16 @@ namespace AI.Planner.Actions.MyPlan
         void GenerateArgumentPermutations(StateData stateData, NativeList<ActionKey> argumentPermutations)
         {
             var NPCFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),  };
-            var GoalFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Goal>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),  };
+            var GateFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Gate>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),  };
             var GameManagerFilter = new NativeArray<ComponentType>(1, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.GateSwitch>(),  };
             var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
-            var GoalObjectIndices = new NativeList<int>(2, Allocator.Temp);
-            stateData.GetTraitBasedObjectIndices(GoalObjectIndices, GoalFilter);
+            var GateObjectIndices = new NativeList<int>(2, Allocator.Temp);
+            stateData.GetTraitBasedObjectIndices(GateObjectIndices, GateFilter);
             var GameManagerObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(GameManagerObjectIndices, GameManagerFilter);
             var LocationBuffer = stateData.LocationBuffer;
-            var GateSwitchBuffer = stateData.GateSwitchBuffer;
+            var BaggageBuffer = stateData.BaggageBuffer;
             
             for (int i0 = 0; i0 < NPCObjectIndices.Length; i0++)
             {
@@ -62,13 +62,15 @@ namespace AI.Planner.Actions.MyPlan
                 var NPCObject = stateData.TraitBasedObjects[NPCIndex];
                 
                 
+                if (!(BaggageBuffer[NPCObject.BaggageIndex].ItemCount == 1))
+                    continue;
             
-            for (int i1 = 0; i1 < GoalObjectIndices.Length; i1++)
+            for (int i1 = 0; i1 < GateObjectIndices.Length; i1++)
             {
-                var GoalIndex = GoalObjectIndices[i1];
-                var GoalObject = stateData.TraitBasedObjects[GoalIndex];
+                var GateIndex = GateObjectIndices[i1];
+                var GateObject = stateData.TraitBasedObjects[GateIndex];
                 
-                if (!(LocationBuffer[NPCObject.LocationIndex].Position != LocationBuffer[GoalObject.LocationIndex].Position))
+                if (!(LocationBuffer[NPCObject.LocationIndex].Position == LocationBuffer[GateObject.LocationIndex].Position))
                     continue;
                 
             
@@ -78,13 +80,11 @@ namespace AI.Planner.Actions.MyPlan
                 var GameManagerObject = stateData.TraitBasedObjects[GameManagerIndex];
                 
                 
-                if (!(GateSwitchBuffer[GameManagerObject.GateSwitchIndex].OpenCount == 2))
-                    continue;
 
                 var actionKey = new ActionKey(k_MaxArguments) {
                                                         ActionGuid = ActionGuid,
                                                        [k_NPCIndex] = NPCIndex,
-                                                       [k_GoalIndex] = GoalIndex,
+                                                       [k_GateIndex] = GateIndex,
                                                        [k_GameManagerIndex] = GameManagerIndex,
                                                     };
                 argumentPermutations.Add(actionKey);
@@ -92,10 +92,10 @@ namespace AI.Planner.Actions.MyPlan
             }
             }
             NPCObjectIndices.Dispose();
-            GoalObjectIndices.Dispose();
+            GateObjectIndices.Dispose();
             GameManagerObjectIndices.Dispose();
             NPCFilter.Dispose();
-            GoalFilter.Dispose();
+            GateFilter.Dispose();
             GameManagerFilter.Dispose();
         }
 
@@ -103,31 +103,25 @@ namespace AI.Planner.Actions.MyPlan
         {
             var originalState = m_StateDataContext.GetStateData(originalStateEntityKey);
             var originalStateObjectBuffer = originalState.TraitBasedObjects;
-            var originalNPCObject = originalStateObjectBuffer[action[k_NPCIndex]];
-            var originalGoalObject = originalStateObjectBuffer[action[k_GoalIndex]];
             var originalGameManagerObject = originalStateObjectBuffer[action[k_GameManagerIndex]];
+            var originalNPCObject = originalStateObjectBuffer[action[k_NPCIndex]];
 
             var newState = m_StateDataContext.CopyStateData(originalState);
-            var newLocationBuffer = newState.LocationBuffer;
             var newGateSwitchBuffer = newState.GateSwitchBuffer;
-            var newGoalBuffer = newState.GoalBuffer;
-            {
-                    var @Location = newLocationBuffer[originalNPCObject.LocationIndex];
-                    @Location.Position = newLocationBuffer[originalGoalObject.LocationIndex].Position;
-                    newLocationBuffer[originalNPCObject.LocationIndex] = @Location;
-            }
+            var newBaggageBuffer = newState.BaggageBuffer;
             {
                     var @GateSwitch = newGateSwitchBuffer[originalGameManagerObject.GateSwitchIndex];
-                    @GateSwitch.@OpenCount = 0;
+                    @GateSwitch.@OpenCount += 1;
                     newGateSwitchBuffer[originalGameManagerObject.GateSwitchIndex] = @GateSwitch;
             }
             {
-                    var @Goal = newGoalBuffer[originalGoalObject.GoalIndex];
-                    @Goal.@IsDone = true;
-                    newGoalBuffer[originalGoalObject.GoalIndex] = @Goal;
+                    var @Baggage = newBaggageBuffer[originalNPCObject.BaggageIndex];
+                    @Baggage.@ItemCount -= 1;
+                    newBaggageBuffer[originalNPCObject.BaggageIndex] = @Baggage;
             }
 
             
+            newState.RemoveTraitBasedObjectAtIndex(action[k_GateIndex]);
 
             var reward = Reward(originalState, action, newState);
             var StateTransitionInfo = new StateTransitionInfo { Probability = 1f, TransitionUtilityValue = reward };
@@ -138,7 +132,7 @@ namespace AI.Planner.Actions.MyPlan
 
         float Reward(StateData originalState, ActionKey action, StateData newState)
         {
-            var reward = 0f;
+            var reward = 1f;
 
             return reward;
         }
@@ -153,15 +147,15 @@ namespace AI.Planner.Actions.MyPlan
             var argumentPermutations = new NativeList<ActionKey>(4, Allocator.Temp);
             GenerateArgumentPermutations(stateData, argumentPermutations);
 
-            var transitionInfo = new NativeArray<MoveToGoalFixupReference>(argumentPermutations.Length, Allocator.Temp);
+            var transitionInfo = new NativeArray<TurnOnGateFixupReference>(argumentPermutations.Length, Allocator.Temp);
             for (var i = 0; i < argumentPermutations.Length; i++)
             {
-                transitionInfo[i] = new MoveToGoalFixupReference { TransitionInfo = ApplyEffects(argumentPermutations[i], stateEntityKey) };
+                transitionInfo[i] = new TurnOnGateFixupReference { TransitionInfo = ApplyEffects(argumentPermutations[i], stateEntityKey) };
             }
 
             // fixups
             var stateEntity = stateEntityKey.Entity;
-            var fixupBuffer = m_StateDataContext.EntityCommandBuffer.AddBuffer<MoveToGoalFixupReference>(jobIndex, stateEntity);
+            var fixupBuffer = m_StateDataContext.EntityCommandBuffer.AddBuffer<TurnOnGateFixupReference>(jobIndex, stateEntity);
             fixupBuffer.CopyFrom(transitionInfo);
 
             transitionInfo.Dispose();
@@ -174,9 +168,9 @@ namespace AI.Planner.Actions.MyPlan
             return state.GetTraitOnObjectAtIndex<T>(action[k_NPCIndex]);
         }
         
-        public static T GetGoalTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
+        public static T GetGateTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
         {
-            return state.GetTraitOnObjectAtIndex<T>(action[k_GoalIndex]);
+            return state.GetTraitOnObjectAtIndex<T>(action[k_GateIndex]);
         }
         
         public static T GetGameManagerTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
@@ -186,7 +180,7 @@ namespace AI.Planner.Actions.MyPlan
         
     }
 
-    public struct MoveToGoalFixupReference : IBufferElementData
+    public struct TurnOnGateFixupReference : IBufferElementData
     {
         internal StateTransitionInfoPair<StateEntityKey, ActionKey, StateTransitionInfo> TransitionInfo;
     }

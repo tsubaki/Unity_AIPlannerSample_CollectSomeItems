@@ -41,9 +41,9 @@ MonoBehaviour:
       m_Value: 
   - m_Operator: ==
     m_OperandA:
-      m_Parameter: NPC
-      m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_Parameter: Goal
+      m_Trait: {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
@@ -51,6 +51,6 @@ MonoBehaviour:
       m_Trait: {fileID: 0}
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
-      m_Value: 2
+      m_Value: true
   m_TerminalReward: 100
   m_CustomTerminalRewards: []
