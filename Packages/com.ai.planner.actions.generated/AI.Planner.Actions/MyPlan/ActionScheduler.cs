@@ -13,11 +13,9 @@ namespace AI.Planner.Actions.MyPlan
     public struct ActionScheduler :
         ITraitBasedActionScheduler<TraitBasedObject, StateEntityKey, StateData, StateDataContext, StateManager, ActionKey>
     {
-        public static readonly Guid MoveToItemGuid = Guid.NewGuid();
         public static readonly Guid TakeAItemGuid = Guid.NewGuid();
-        public static readonly Guid MoveToGoalGuid = Guid.NewGuid();
-        public static readonly Guid MoveToSwitchGuid = Guid.NewGuid();
-        public static readonly Guid TurnOnGateGuid = Guid.NewGuid();
+        public static readonly Guid MoveToGuid = Guid.NewGuid();
+        public static readonly Guid PutOnItemGuid = Guid.NewGuid();
 
         // Input
         public NativeList<StateEntityKey> UnexpandedStates { get; set; }
@@ -38,26 +36,14 @@ namespace AI.Planner.Actions.MyPlan
             [ReadOnly]
             public NativeList<StateEntityKey> UnexpandedStates;
             public NativeQueue<StateTransitionInfoPair<StateEntityKey, ActionKey, StateTransitionInfo>> CreatedStateInfo;
-            public EntityCommandBuffer MoveToItemECB;
             public EntityCommandBuffer TakeAItemECB;
-            public EntityCommandBuffer MoveToGoalECB;
-            public EntityCommandBuffer MoveToSwitchECB;
-            public EntityCommandBuffer TurnOnGateECB;
+            public EntityCommandBuffer MoveToECB;
+            public EntityCommandBuffer PutOnItemECB;
 
             public void Execute()
             {
                 // Playback entity changes and output state transition info
                 var entityManager = ExclusiveEntityTransaction;
-
-                MoveToItemECB.Playback(entityManager);
-                for (int i = 0; i < UnexpandedStates.Length; i++)
-                {
-                    var stateEntity = UnexpandedStates[i].Entity;
-                    var MoveToItemRefs = entityManager.GetBuffer<MoveToItemFixupReference>(stateEntity);
-                    for (int j = 0; j < MoveToItemRefs.Length; j++)
-                        CreatedStateInfo.Enqueue(MoveToItemRefs[j].TransitionInfo);
-                    entityManager.RemoveComponent(stateEntity, typeof(MoveToItemFixupReference));
-                }
 
                 TakeAItemECB.Playback(entityManager);
                 for (int i = 0; i < UnexpandedStates.Length; i++)
@@ -69,34 +55,24 @@ namespace AI.Planner.Actions.MyPlan
                     entityManager.RemoveComponent(stateEntity, typeof(TakeAItemFixupReference));
                 }
 
-                MoveToGoalECB.Playback(entityManager);
+                MoveToECB.Playback(entityManager);
                 for (int i = 0; i < UnexpandedStates.Length; i++)
                 {
                     var stateEntity = UnexpandedStates[i].Entity;
-                    var MoveToGoalRefs = entityManager.GetBuffer<MoveToGoalFixupReference>(stateEntity);
-                    for (int j = 0; j < MoveToGoalRefs.Length; j++)
-                        CreatedStateInfo.Enqueue(MoveToGoalRefs[j].TransitionInfo);
-                    entityManager.RemoveComponent(stateEntity, typeof(MoveToGoalFixupReference));
+                    var MoveToRefs = entityManager.GetBuffer<MoveToFixupReference>(stateEntity);
+                    for (int j = 0; j < MoveToRefs.Length; j++)
+                        CreatedStateInfo.Enqueue(MoveToRefs[j].TransitionInfo);
+                    entityManager.RemoveComponent(stateEntity, typeof(MoveToFixupReference));
                 }
 
-                MoveToSwitchECB.Playback(entityManager);
+                PutOnItemECB.Playback(entityManager);
                 for (int i = 0; i < UnexpandedStates.Length; i++)
                 {
                     var stateEntity = UnexpandedStates[i].Entity;
-                    var MoveToSwitchRefs = entityManager.GetBuffer<MoveToSwitchFixupReference>(stateEntity);
-                    for (int j = 0; j < MoveToSwitchRefs.Length; j++)
-                        CreatedStateInfo.Enqueue(MoveToSwitchRefs[j].TransitionInfo);
-                    entityManager.RemoveComponent(stateEntity, typeof(MoveToSwitchFixupReference));
-                }
-
-                TurnOnGateECB.Playback(entityManager);
-                for (int i = 0; i < UnexpandedStates.Length; i++)
-                {
-                    var stateEntity = UnexpandedStates[i].Entity;
-                    var TurnOnGateRefs = entityManager.GetBuffer<TurnOnGateFixupReference>(stateEntity);
-                    for (int j = 0; j < TurnOnGateRefs.Length; j++)
-                        CreatedStateInfo.Enqueue(TurnOnGateRefs[j].TransitionInfo);
-                    entityManager.RemoveComponent(stateEntity, typeof(TurnOnGateFixupReference));
+                    var PutOnItemRefs = entityManager.GetBuffer<PutOnItemFixupReference>(stateEntity);
+                    for (int j = 0; j < PutOnItemRefs.Length; j++)
+                        CreatedStateInfo.Enqueue(PutOnItemRefs[j].TransitionInfo);
+                    entityManager.RemoveComponent(stateEntity, typeof(PutOnItemFixupReference));
                 }
             }
         }
@@ -104,30 +80,22 @@ namespace AI.Planner.Actions.MyPlan
         public JobHandle Schedule(JobHandle inputDeps)
         {
             var entityManager = StateManager.EntityManager;
-            var MoveToItemDataContext = StateManager.GetStateDataContext();
-            var MoveToItemECB = StateManager.GetEntityCommandBuffer();
-            MoveToItemDataContext.EntityCommandBuffer = MoveToItemECB.ToConcurrent();
             var TakeAItemDataContext = StateManager.GetStateDataContext();
             var TakeAItemECB = StateManager.GetEntityCommandBuffer();
             TakeAItemDataContext.EntityCommandBuffer = TakeAItemECB.ToConcurrent();
-            var MoveToGoalDataContext = StateManager.GetStateDataContext();
-            var MoveToGoalECB = StateManager.GetEntityCommandBuffer();
-            MoveToGoalDataContext.EntityCommandBuffer = MoveToGoalECB.ToConcurrent();
-            var MoveToSwitchDataContext = StateManager.GetStateDataContext();
-            var MoveToSwitchECB = StateManager.GetEntityCommandBuffer();
-            MoveToSwitchDataContext.EntityCommandBuffer = MoveToSwitchECB.ToConcurrent();
-            var TurnOnGateDataContext = StateManager.GetStateDataContext();
-            var TurnOnGateECB = StateManager.GetEntityCommandBuffer();
-            TurnOnGateDataContext.EntityCommandBuffer = TurnOnGateECB.ToConcurrent();
+            var MoveToDataContext = StateManager.GetStateDataContext();
+            var MoveToECB = StateManager.GetEntityCommandBuffer();
+            MoveToDataContext.EntityCommandBuffer = MoveToECB.ToConcurrent();
+            var PutOnItemDataContext = StateManager.GetStateDataContext();
+            var PutOnItemECB = StateManager.GetEntityCommandBuffer();
+            PutOnItemDataContext.EntityCommandBuffer = PutOnItemECB.ToConcurrent();
 
-            var allActionJobs = new NativeArray<JobHandle>(6, Allocator.TempJob)
+            var allActionJobs = new NativeArray<JobHandle>(4, Allocator.TempJob)
             {
-                [0] = new MoveToItem(MoveToItemGuid, UnexpandedStates, MoveToItemDataContext).Schedule(UnexpandedStates, 0, inputDeps),
-                [1] = new TakeAItem(TakeAItemGuid, UnexpandedStates, TakeAItemDataContext).Schedule(UnexpandedStates, 0, inputDeps),
-                [2] = new MoveToGoal(MoveToGoalGuid, UnexpandedStates, MoveToGoalDataContext).Schedule(UnexpandedStates, 0, inputDeps),
-                [3] = new MoveToSwitch(MoveToSwitchGuid, UnexpandedStates, MoveToSwitchDataContext).Schedule(UnexpandedStates, 0, inputDeps),
-                [4] = new TurnOnGate(TurnOnGateGuid, UnexpandedStates, TurnOnGateDataContext).Schedule(UnexpandedStates, 0, inputDeps),
-                [5] = entityManager.ExclusiveEntityTransactionDependency
+                [0] = new TakeAItem(TakeAItemGuid, UnexpandedStates, TakeAItemDataContext).Schedule(UnexpandedStates, 0, inputDeps),
+                [1] = new MoveTo(MoveToGuid, UnexpandedStates, MoveToDataContext).Schedule(UnexpandedStates, 0, inputDeps),
+                [2] = new PutOnItem(PutOnItemGuid, UnexpandedStates, PutOnItemDataContext).Schedule(UnexpandedStates, 0, inputDeps),
+                [3] = entityManager.ExclusiveEntityTransactionDependency
             };
 
             var allActionJobsHandle = JobHandle.CombineDependencies(allActionJobs);
@@ -139,11 +107,9 @@ namespace AI.Planner.Actions.MyPlan
                 ExclusiveEntityTransaction = StateManager.ExclusiveEntityTransaction,
                 UnexpandedStates = UnexpandedStates,
                 CreatedStateInfo = m_CreatedStateInfo,
-                MoveToItemECB = MoveToItemECB,
                 TakeAItemECB = TakeAItemECB,
-                MoveToGoalECB = MoveToGoalECB,
-                MoveToSwitchECB = MoveToSwitchECB,
-                TurnOnGateECB = TurnOnGateECB,
+                MoveToECB = MoveToECB,
+                PutOnItemECB = PutOnItemECB,
             };
 
             var playbackJobHandle = playbackJob.Schedule(allActionJobsHandle);

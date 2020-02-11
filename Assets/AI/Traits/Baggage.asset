@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Namespace: 
   m_Fields:
-  - m_UniqueId: 100
-    m_Name: ItemCount
-    m_Type: System.Int32
+  - m_UniqueId: 101
+    m_Name: HasItem
+    m_Type: System.Boolean
     m_DefaultValue:
       m_Name: 
       m_BoolValue: 0
@@ -25,4 +25,4 @@ MonoBehaviour:
       m_StringValue: 
       m_ObjectValue: {fileID: 0}
     m_Restriction: 0
-  m_NextFieldUniqueId: 101
+  m_NextFieldUniqueId: 102

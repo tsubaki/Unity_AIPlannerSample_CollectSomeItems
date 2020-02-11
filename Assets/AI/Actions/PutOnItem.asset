@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00e16f0575d73480ebe7b76bb4ae3939, type: 3}
-  m_Name: TurnOnGate
+  m_Name: PutOnItem
   m_EditorClassIdentifier: 
   m_Parameters:
   - m_Name: NPC
@@ -21,10 +21,11 @@ MonoBehaviour:
     m_ProhibitedTraits: []
   - m_Name: Gate
     m_RequiredTraits:
-    - {fileID: 11400000, guid: d1b0d4602cb9c444482ea56d0e0cdbb3, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+    - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
+    - {fileID: 11400000, guid: d1b0d4602cb9c444482ea56d0e0cdbb3, type: 2}
     m_ProhibitedTraits: []
-  - m_Name: GameManager
+  - m_Name: GameState
     m_RequiredTraits:
     - {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
     m_ProhibitedTraits: []
@@ -46,7 +47,7 @@ MonoBehaviour:
     m_OperandA:
       m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
@@ -54,14 +55,26 @@ MonoBehaviour:
       m_Trait: {fileID: 0}
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
-      m_Value: 1
+      m_Value: true
+  - m_Operator: ==
+    m_OperandA:
+      m_Parameter: Gate
+      m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
+      m_TraitFieldId: 101
+      m_Enum: {fileID: 0}
+      m_Value: 
+    m_OperandB:
+      m_Parameter: 
+      m_Trait: {fileID: 0}
+      m_TraitFieldId: 0
+      m_Enum: {fileID: 0}
+      m_Value: false
   m_CreatedObjects: []
-  m_RemovedObjects:
-  - Gate
+  m_RemovedObjects: []
   m_ObjectModifiers:
   - m_Operator: +=
     m_OperandA:
-      m_Parameter: GameManager
+      m_Parameter: GameState
       m_Trait: {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
       m_TraitFieldId: 100
       m_Enum: {fileID: 0}
@@ -72,11 +85,11 @@ MonoBehaviour:
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
       m_Value: 1
-  - m_Operator: -=
+  - m_Operator: =
     m_OperandA:
       m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
@@ -84,6 +97,19 @@ MonoBehaviour:
       m_Trait: {fileID: 0}
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
-      m_Value: 1
-  m_Reward: 1
+      m_Value: false
+  - m_Operator: =
+    m_OperandA:
+      m_Parameter: Gate
+      m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
+      m_TraitFieldId: 101
+      m_Enum: {fileID: 0}
+      m_Value: 
+    m_OperandB:
+      m_Parameter: 
+      m_Trait: {fileID: 0}
+      m_TraitFieldId: 0
+      m_Enum: {fileID: 0}
+      m_Value: true
+  m_Reward: 0
   m_CustomRewards: []

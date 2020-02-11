@@ -15,7 +15,6 @@ MonoBehaviour:
   m_ActionDefinitions:
   - {fileID: 11400000, guid: d25f01bbfa7a14298911a28f31c3d812, type: 2}
   - {fileID: 11400000, guid: 69e96b26b3b2448e395fcb4ef7a57423, type: 2}
-  - {fileID: 11400000, guid: ed8e1e96416fb455a9396f0494320d4c, type: 2}
   - {fileID: 11400000, guid: 54a853a94648847d9bc77b218e68fc70, type: 2}
   m_StateTerminationDefinitions:
   - {fileID: 11400000, guid: d887469e7fd9b42c3968c0670771f77b, type: 2}

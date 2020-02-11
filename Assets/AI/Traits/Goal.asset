@@ -13,16 +13,5 @@ MonoBehaviour:
   m_Name: Goal
   m_EditorClassIdentifier: 
   m_Namespace: 
-  m_Fields:
-  - m_UniqueId: 101
-    m_Name: IsDone
-    m_Type: System.Boolean
-    m_DefaultValue:
-      m_Name: 
-      m_BoolValue: 0
-      m_FloatValue: 0
-      m_IntValue: 0
-      m_StringValue: 
-      m_ObjectValue: {fileID: 0}
-    m_Restriction: 0
+  m_Fields: []
   m_NextFieldUniqueId: 102

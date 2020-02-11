@@ -41,7 +41,7 @@ namespace AI.Planner.Actions.MyPlan
 
         void GenerateArgumentPermutations(StateData stateData, NativeList<ActionKey> argumentPermutations)
         {
-            var NPCFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),  };
+            var NPCFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),  };
             var WayPointFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.WayPoint>(),  };
             var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
@@ -103,7 +103,7 @@ namespace AI.Planner.Actions.MyPlan
 
         float Reward(StateData originalState, ActionKey action, StateData newState)
         {
-            var reward = -0.1f;
+            var reward = 0f;
             {
                 var param0 = originalState.GetTraitOnObjectAtIndex<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(action[0]);
                 var param1 = originalState.GetTraitOnObjectAtIndex<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(action[1]);

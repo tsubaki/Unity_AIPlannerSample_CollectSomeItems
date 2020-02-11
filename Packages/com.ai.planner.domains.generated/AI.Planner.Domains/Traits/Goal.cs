@@ -7,40 +7,24 @@ namespace AI.Planner.Domains
     [Serializable]
     public struct Goal : ITrait, IEquatable<Goal>
     {
-        public const string FieldIsDone = "IsDone";
-        public System.Boolean IsDone;
 
         public void SetField(string fieldName, object value)
         {
-            switch (fieldName)
-            {
-                case nameof(IsDone):
-                    IsDone = (System.Boolean)value;
-                    break;
-                default:
-                    throw new ArgumentException($"Field \"{fieldName}\" does not exist on trait Goal.");
-            }
         }
 
         public object GetField(string fieldName)
         {
-            switch (fieldName)
-            {
-                case nameof(IsDone):
-                    return IsDone;
-                default:
-                    throw new ArgumentException($"Field \"{fieldName}\" does not exist on trait Goal.");
-            }
+            throw new ArgumentException("No fields exist on trait Goal.");
         }
 
         public bool Equals(Goal other)
         {
-            return IsDone == other.IsDone;
+            return true;
         }
 
         public override string ToString()
         {
-            return $"Goal: {IsDone}";
+            return $"Goal";
         }
     }
 }
