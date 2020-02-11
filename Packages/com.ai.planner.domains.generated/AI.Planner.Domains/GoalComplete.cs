@@ -11,15 +11,12 @@ namespace AI.Planner.Domains
         {
             var NPCFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Npc>(),[1] = ComponentType.ReadWrite<Location>(),  };
             var GoalFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Goal>(),[1] = ComponentType.ReadWrite<Location>(),  };
-            var GameStateFilter = new NativeArray<ComponentType>(1, Allocator.Temp){[0] = ComponentType.ReadWrite<GateSwitch>(),  };
             var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
             var GoalObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(GoalObjectIndices, GoalFilter);
-            var GameStateObjectIndices = new NativeList<int>(2, Allocator.Temp);
-            stateData.GetTraitBasedObjectIndices(GameStateObjectIndices, GameStateFilter);
             var LocationBuffer = stateData.LocationBuffer;
-            var GateSwitchBuffer = stateData.GateSwitchBuffer;
+            var GoalBuffer = stateData.GoalBuffer;
             
             for (int i0 = 0; i0 < NPCObjectIndices.Length; i0++)
             {
@@ -36,28 +33,17 @@ namespace AI.Planner.Domains
                 if (!(LocationBuffer[NPCObject.LocationIndex].Position == LocationBuffer[GoalObject.LocationIndex].Position))
                     continue;
                 
-            
-            for (int i2 = 0; i2 < GameStateObjectIndices.Length; i2++)
-            {
-                var GameStateIndex = GameStateObjectIndices[i2];
-                var GameStateObject = stateData.TraitBasedObjects[GameStateIndex];
-                
-                
-                if (!(GateSwitchBuffer[GameStateObject.GateSwitchIndex].OpenCount == 2))
+                if (!(GoalBuffer[GoalObject.GoalIndex].GateCount == 2))
                     continue;
                 NPCFilter.Dispose();
                 GoalFilter.Dispose();
-                GameStateFilter.Dispose();
                 return true;
-            }
             }
             }
             NPCObjectIndices.Dispose();
             GoalObjectIndices.Dispose();
-            GameStateObjectIndices.Dispose();
             NPCFilter.Dispose();
             GoalFilter.Dispose();
-            GameStateFilter.Dispose();
 
             return false;
         }

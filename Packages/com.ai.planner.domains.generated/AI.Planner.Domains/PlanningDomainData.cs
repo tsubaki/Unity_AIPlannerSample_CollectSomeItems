@@ -35,26 +35,24 @@ namespace AI.Planner.Domains
                 Index = 0;
             else if (typeIndex == TypeManager.GetTypeIndex<Gate>())
                 Index = 1;
-            else if (typeIndex == TypeManager.GetTypeIndex<GateSwitch>())
-                Index = 2;
             else if (typeIndex == TypeManager.GetTypeIndex<Goal>())
-                Index = 3;
+                Index = 2;
             else if (typeIndex == TypeManager.GetTypeIndex<Item>())
-                Index = 4;
+                Index = 3;
             else if (typeIndex == TypeManager.GetTypeIndex<Npc>())
-                Index = 5;
+                Index = 4;
             else if (typeIndex == TypeManager.GetTypeIndex<WayPoint>())
-                Index = 6;
+                Index = 5;
             else if (typeIndex == TypeManager.GetTypeIndex<Location>())
-                Index = 7;
+                Index = 6;
             else if (typeIndex == TypeManager.GetTypeIndex<Moveable>())
-                Index = 8;
+                Index = 7;
         }
     }
 
     public struct TraitBasedObject : ITraitBasedObject
     {
-        public int Length => 9;
+        public int Length => 8;
 
         public byte this[int i]
         {
@@ -67,18 +65,16 @@ namespace AI.Planner.Domains
                     case 1:
                         return GateIndex;
                     case 2:
-                        return GateSwitchIndex;
-                    case 3:
                         return GoalIndex;
-                    case 4:
+                    case 3:
                         return ItemIndex;
-                    case 5:
+                    case 4:
                         return NpcIndex;
-                    case 6:
+                    case 5:
                         return WayPointIndex;
-                    case 7:
+                    case 6:
                         return LocationIndex;
-                    case 8:
+                    case 7:
                         return MoveableIndex;
                 }
 
@@ -95,24 +91,21 @@ namespace AI.Planner.Domains
                         GateIndex = value;
                         break;
                     case 2:
-                        GateSwitchIndex = value;
-                        break;
-                    case 3:
                         GoalIndex = value;
                         break;
-                    case 4:
+                    case 3:
                         ItemIndex = value;
                         break;
-                    case 5:
+                    case 4:
                         NpcIndex = value;
                         break;
-                    case 6:
+                    case 5:
                         WayPointIndex = value;
                         break;
-                    case 7:
+                    case 6:
                         LocationIndex = value;
                         break;
-                    case 8:
+                    case 7:
                         MoveableIndex = value;
                         break;
                 }
@@ -125,7 +118,6 @@ namespace AI.Planner.Domains
         {
             BaggageIndex = Unset,
             GateIndex = Unset,
-            GateSwitchIndex = Unset,
             GoalIndex = Unset,
             ItemIndex = Unset,
             NpcIndex = Unset,
@@ -137,7 +129,6 @@ namespace AI.Planner.Domains
 
         public byte BaggageIndex;
         public byte GateIndex;
-        public byte GateSwitchIndex;
         public byte GoalIndex;
         public byte ItemIndex;
         public byte NpcIndex;
@@ -148,7 +139,6 @@ namespace AI.Planner.Domains
 
         static readonly int s_BaggageTypeIndex = TypeManager.GetTypeIndex<Baggage>();
         static readonly int s_GateTypeIndex = TypeManager.GetTypeIndex<Gate>();
-        static readonly int s_GateSwitchTypeIndex = TypeManager.GetTypeIndex<GateSwitch>();
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
         static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
@@ -194,11 +184,6 @@ namespace AI.Planner.Domains
                 else if (t.TypeIndex == s_GateTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GateIndex == Unset)
-                        return false;
-                }
-                else if (t.TypeIndex == s_GateSwitchTypeIndex)
-                {
-                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GateSwitchIndex == Unset)
                         return false;
                 }
                 else if (t.TypeIndex == s_GoalTypeIndex)
@@ -254,11 +239,6 @@ namespace AI.Planner.Domains
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GateIndex == Unset)
                         return false;
                 }
-                else if (t.TypeIndex == s_GateSwitchTypeIndex)
-                {
-                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GateSwitchIndex == Unset)
-                        return false;
-                }
                 else if (t.TypeIndex == s_GoalTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ GoalIndex == Unset)
@@ -305,7 +285,6 @@ namespace AI.Planner.Domains
 
         public DynamicBuffer<Baggage> BaggageBuffer;
         public DynamicBuffer<Gate> GateBuffer;
-        public DynamicBuffer<GateSwitch> GateSwitchBuffer;
         public DynamicBuffer<Goal> GoalBuffer;
         public DynamicBuffer<Item> ItemBuffer;
         public DynamicBuffer<Npc> NpcBuffer;
@@ -315,7 +294,6 @@ namespace AI.Planner.Domains
 
         static readonly int s_BaggageTypeIndex = TypeManager.GetTypeIndex<Baggage>();
         static readonly int s_GateTypeIndex = TypeManager.GetTypeIndex<Gate>();
-        static readonly int s_GateSwitchTypeIndex = TypeManager.GetTypeIndex<GateSwitch>();
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
         static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
@@ -331,7 +309,6 @@ namespace AI.Planner.Domains
 
             BaggageBuffer = system.GetBufferFromEntity<Baggage>(!readWrite)[stateEntity];
             GateBuffer = system.GetBufferFromEntity<Gate>(!readWrite)[stateEntity];
-            GateSwitchBuffer = system.GetBufferFromEntity<GateSwitch>(!readWrite)[stateEntity];
             GoalBuffer = system.GetBufferFromEntity<Goal>(!readWrite)[stateEntity];
             ItemBuffer = system.GetBufferFromEntity<Item>(!readWrite)[stateEntity];
             NpcBuffer = system.GetBufferFromEntity<Npc>(!readWrite)[stateEntity];
@@ -348,7 +325,6 @@ namespace AI.Planner.Domains
 
             BaggageBuffer = entityCommandBuffer.AddBuffer<Baggage>(jobIndex, stateEntity);
             GateBuffer = entityCommandBuffer.AddBuffer<Gate>(jobIndex, stateEntity);
-            GateSwitchBuffer = entityCommandBuffer.AddBuffer<GateSwitch>(jobIndex, stateEntity);
             GoalBuffer = entityCommandBuffer.AddBuffer<Goal>(jobIndex, stateEntity);
             ItemBuffer = entityCommandBuffer.AddBuffer<Item>(jobIndex, stateEntity);
             NpcBuffer = entityCommandBuffer.AddBuffer<Npc>(jobIndex, stateEntity);
@@ -369,8 +345,6 @@ namespace AI.Planner.Domains
             Baggages.CopyFrom(BaggageBuffer.AsNativeArray());
             var Gates = entityCommandBuffer.SetBuffer<Gate>(jobIndex, stateEntity);
             Gates.CopyFrom(GateBuffer.AsNativeArray());
-            var GateSwitchs = entityCommandBuffer.SetBuffer<GateSwitch>(jobIndex, stateEntity);
-            GateSwitchs.CopyFrom(GateSwitchBuffer.AsNativeArray());
             var Goals = entityCommandBuffer.SetBuffer<Goal>(jobIndex, stateEntity);
             Goals.CopyFrom(GoalBuffer.AsNativeArray());
             var Items = entityCommandBuffer.SetBuffer<Item>(jobIndex, stateEntity);
@@ -392,7 +366,6 @@ namespace AI.Planner.Domains
 
                 BaggageBuffer = Baggages,
                 GateBuffer = Gates,
-                GateSwitchBuffer = GateSwitchs,
                 GoalBuffer = Goals,
                 ItemBuffer = Items,
                 NpcBuffer = Npcs,
@@ -422,11 +395,6 @@ namespace AI.Planner.Domains
                 {
                     GateBuffer.Add(default);
                     traitBasedObject.GateIndex = (byte) (GateBuffer.Length - 1);
-                }
-                else if (t.TypeIndex == s_GateSwitchTypeIndex)
-                {
-                    GateSwitchBuffer.Add(default);
-                    traitBasedObject.GateSwitchIndex = (byte) (GateSwitchBuffer.Length - 1);
                 }
                 else if (t.TypeIndex == s_GoalTypeIndex)
                 {
@@ -476,8 +444,6 @@ namespace AI.Planner.Domains
                 SetTraitOnObject(BaggageTrait, ref traitBasedObject);
             else if (trait is Gate GateTrait)
                 SetTraitOnObject(GateTrait, ref traitBasedObject);
-            else if (trait is GateSwitch GateSwitchTrait)
-                SetTraitOnObject(GateSwitchTrait, ref traitBasedObject);
             else if (trait is Goal GoalTrait)
                 SetTraitOnObject(GoalTrait, ref traitBasedObject);
             else if (trait is Item ItemTrait)
@@ -584,7 +550,6 @@ namespace AI.Planner.Domains
 
             RemoveTraitOnObject<Baggage>(ref traitBasedObject);
             RemoveTraitOnObject<Gate>(ref traitBasedObject);
-            RemoveTraitOnObject<GateSwitch>(ref traitBasedObject);
             RemoveTraitOnObject<Goal>(ref traitBasedObject);
             RemoveTraitOnObject<Item>(ref traitBasedObject);
             RemoveTraitOnObject<Npc>(ref traitBasedObject);
@@ -676,7 +641,6 @@ namespace AI.Planner.Domains
         {
             RemoveTraitOnObjectAtIndex<Baggage>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Gate>(traitBasedObjectIndex);
-            RemoveTraitOnObjectAtIndex<GateSwitch>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Goal>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Item>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Npc>(traitBasedObjectIndex);
@@ -776,18 +740,16 @@ namespace AI.Planner.Domains
                 case 1:
                     return GateBuffer.Reinterpret<T>();
                 case 2:
-                    return GateSwitchBuffer.Reinterpret<T>();
-                case 3:
                     return GoalBuffer.Reinterpret<T>();
-                case 4:
+                case 3:
                     return ItemBuffer.Reinterpret<T>();
-                case 5:
+                case 4:
                     return NpcBuffer.Reinterpret<T>();
-                case 6:
+                case 5:
                     return WayPointBuffer.Reinterpret<T>();
-                case 7:
+                case 6:
                     return LocationBuffer.Reinterpret<T>();
-                case 8:
+                case 7:
                     return MoveableBuffer.Reinterpret<T>();
             }
 
@@ -803,7 +765,6 @@ namespace AI.Planner.Domains
             if (TraitBasedObjects.Length != rhsState.TraitBasedObjects.Length
                 || BaggageBuffer.Length != rhsState.BaggageBuffer.Length
                 || GateBuffer.Length != rhsState.GateBuffer.Length
-                || GateSwitchBuffer.Length != rhsState.GateSwitchBuffer.Length
                 || GoalBuffer.Length != rhsState.GoalBuffer.Length
                 || ItemBuffer.Length != rhsState.ItemBuffer.Length
                 || NpcBuffer.Length != rhsState.NpcBuffer.Length
@@ -885,10 +846,9 @@ namespace AI.Planner.Domains
 
 
 
-            if (traitBasedObjectLHS.GateSwitchIndex != TraitBasedObject.Unset
-                && !GateSwitchTraitAttributesEqual(GateSwitchBuffer[traitBasedObjectLHS.GateSwitchIndex], rhsState.GateSwitchBuffer[traitBasedObjectRHS.GateSwitchIndex]))
+            if (traitBasedObjectLHS.GoalIndex != TraitBasedObject.Unset
+                && !GoalTraitAttributesEqual(GoalBuffer[traitBasedObjectLHS.GoalIndex], rhsState.GoalBuffer[traitBasedObjectRHS.GoalIndex]))
                 return false;
-
 
 
 
@@ -903,10 +863,10 @@ namespace AI.Planner.Domains
             return true;
         }
         
-        bool GateSwitchTraitAttributesEqual(GateSwitch one, GateSwitch two)
+        bool GoalTraitAttributesEqual(Goal one, Goal two)
         {
             return
-                    one.OpenCount == two.OpenCount;
+                    one.GateCount == two.GateCount;
         }
         
         bool LocationTraitAttributesEqual(Location one, Location two)
@@ -947,17 +907,11 @@ namespace AI.Planner.Domains
                 var value = 397;
                 stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
             }
-            for (int i = 0; i < GateSwitchBuffer.Length; i++)
-            {
-                var element = GateSwitchBuffer[i];
-                var value = 397
-                    ^ element.OpenCount.GetHashCode();
-                stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
-            }
             for (int i = 0; i < GoalBuffer.Length; i++)
             {
                 var element = GoalBuffer[i];
-                var value = 397;
+                var value = 397
+                    ^ element.GateCount.GetHashCode();
                 stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
             }
             for (int i = 0; i < ItemBuffer.Length; i++)
@@ -1017,10 +971,6 @@ namespace AI.Planner.Domains
 
                 traitIndex = traitBasedObject[i++];
                 if (traitIndex != TraitBasedObject.Unset)
-                    sb.AppendLine(GateSwitchBuffer[traitIndex].ToString());
-
-                traitIndex = traitBasedObject[i++];
-                if (traitIndex != TraitBasedObject.Unset)
                     sb.AppendLine(GoalBuffer[traitIndex].ToString());
 
                 traitIndex = traitBasedObject[i++];
@@ -1061,7 +1011,6 @@ namespace AI.Planner.Domains
 
         [ReadOnly] public BufferFromEntity<Baggage> BaggageData;
         [ReadOnly] public BufferFromEntity<Gate> GateData;
-        [ReadOnly] public BufferFromEntity<GateSwitch> GateSwitchData;
         [ReadOnly] public BufferFromEntity<Goal> GoalData;
         [ReadOnly] public BufferFromEntity<Item> ItemData;
         [ReadOnly] public BufferFromEntity<Npc> NpcData;
@@ -1077,7 +1026,6 @@ namespace AI.Planner.Domains
 
             BaggageData = system.GetBufferFromEntity<Baggage>(true);
             GateData = system.GetBufferFromEntity<Gate>(true);
-            GateSwitchData = system.GetBufferFromEntity<GateSwitch>(true);
             GoalData = system.GetBufferFromEntity<Goal>(true);
             ItemData = system.GetBufferFromEntity<Item>(true);
             NpcData = system.GetBufferFromEntity<Npc>(true);
@@ -1101,7 +1049,6 @@ namespace AI.Planner.Domains
 
                 BaggageBuffer = BaggageData[stateEntity],
                 GateBuffer = GateData[stateEntity],
-                GateSwitchBuffer = GateSwitchData[stateEntity],
                 GoalBuffer = GoalData[stateEntity],
                 ItemBuffer = ItemData[stateEntity],
                 NpcBuffer = NpcData[stateEntity],
@@ -1156,7 +1103,6 @@ namespace AI.Planner.Domains
             m_StateArchetype = EntityManager.CreateArchetype(typeof(State), typeof(TraitBasedObject), typeof(TraitBasedObjectId), typeof(HashCode),
                 typeof(Baggage),
                 typeof(Gate),
-                typeof(GateSwitch),
                 typeof(Goal),
                 typeof(Item),
                 typeof(Npc),

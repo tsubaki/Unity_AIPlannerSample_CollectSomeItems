@@ -15,9 +15,9 @@ MonoBehaviour:
   m_Parameters:
   - m_Name: NPC
     m_RequiredTraits:
-    - {fileID: 11400000, guid: 3f130894604de4e62a1cc7081fbc60a2, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
     - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
+    - {fileID: 11400000, guid: 3f130894604de4e62a1cc7081fbc60a2, type: 2}
     m_ProhibitedTraits: []
   - m_Name: Gate
     m_RequiredTraits:
@@ -27,7 +27,7 @@ MonoBehaviour:
     m_ProhibitedTraits: []
   - m_Name: GameState
     m_RequiredTraits:
-    - {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
+    - {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
     m_ProhibitedTraits: []
   m_Preconditions:
   - m_Operator: ==
@@ -75,8 +75,8 @@ MonoBehaviour:
   - m_Operator: +=
     m_OperandA:
       m_Parameter: GameState
-      m_Trait: {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
-      m_TraitFieldId: 100
+      m_Trait: {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
+      m_TraitFieldId: 102
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:

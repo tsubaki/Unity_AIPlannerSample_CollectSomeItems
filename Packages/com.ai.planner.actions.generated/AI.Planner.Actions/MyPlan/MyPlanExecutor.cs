@@ -116,13 +116,13 @@ namespace AI.Planner.Actions.MyPlan
                             var traitLocation = stateData.GetTraitOnObjectAtIndex<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitLocation.GetField(split[2]) : traitLocation;
                             break;
-                        case nameof(Npc):
-                            var traitNpc = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Npc>(traitBasedObjectIndex);
-                            arguments[i] = split.Length == 3 ? traitNpc.GetField(split[2]) : traitNpc;
-                            break;
                         case nameof(Item):
                             var traitItem = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Item>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitItem.GetField(split[2]) : traitItem;
+                            break;
+                        case nameof(Npc):
+                            var traitNpc = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Npc>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitNpc.GetField(split[2]) : traitNpc;
                             break;
                         case nameof(WayPoint):
                             var traitWayPoint = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.WayPoint>(traitBasedObjectIndex);
@@ -131,10 +131,6 @@ namespace AI.Planner.Actions.MyPlan
                         case nameof(Gate):
                             var traitGate = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Gate>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitGate.GetField(split[2]) : traitGate;
-                            break;
-                        case nameof(GateSwitch):
-                            var traitGateSwitch = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.GateSwitch>(traitBasedObjectIndex);
-                            arguments[i] = split.Length == 3 ? traitGateSwitch.GetField(split[2]) : traitGateSwitch;
                             break;
                         case nameof(Goal):
                             var traitGoal = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Goal>(traitBasedObjectIndex);

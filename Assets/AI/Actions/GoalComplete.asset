@@ -24,10 +24,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
     m_ProhibitedTraits: []
-  - m_Name: GameState
-    m_RequiredTraits:
-    - {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
-    m_ProhibitedTraits: []
   m_Criteria:
   - m_Operator: ==
     m_OperandA:
@@ -44,9 +40,9 @@ MonoBehaviour:
       m_Value: 
   - m_Operator: ==
     m_OperandA:
-      m_Parameter: GameState
-      m_Trait: {fileID: 11400000, guid: 3150472d4afcc4cd0a972286f50e5814, type: 2}
-      m_TraitFieldId: 100
+      m_Parameter: Goal
+      m_Trait: {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
+      m_TraitFieldId: 102
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:

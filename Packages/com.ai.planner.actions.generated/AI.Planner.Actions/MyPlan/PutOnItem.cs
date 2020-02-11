@@ -44,9 +44,9 @@ namespace AI.Planner.Actions.MyPlan
 
         void GenerateArgumentPermutations(StateData stateData, NativeList<ActionKey> argumentPermutations)
         {
-            var NPCFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),  };
+            var NPCFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),  };
             var GateFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Gate>(),  };
-            var GameStateFilter = new NativeArray<ComponentType>(1, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.GateSwitch>(),  };
+            var GameStateFilter = new NativeArray<ComponentType>(1, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Goal>(),  };
             var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
             var GateObjectIndices = new NativeList<int>(2, Allocator.Temp);
@@ -113,12 +113,12 @@ namespace AI.Planner.Actions.MyPlan
             var originalGateObject = originalStateObjectBuffer[action[k_GateIndex]];
 
             var newState = m_StateDataContext.CopyStateData(originalState);
-            var newGateSwitchBuffer = newState.GateSwitchBuffer;
+            var newGoalBuffer = newState.GoalBuffer;
             var newBaggageBuffer = newState.BaggageBuffer;
             {
-                    var @GateSwitch = newGateSwitchBuffer[originalGameStateObject.GateSwitchIndex];
-                    @GateSwitch.@OpenCount += 1;
-                    newGateSwitchBuffer[originalGameStateObject.GateSwitchIndex] = @GateSwitch;
+                    var @Goal = newGoalBuffer[originalGameStateObject.GoalIndex];
+                    @Goal.@GateCount += 1;
+                    newGoalBuffer[originalGameStateObject.GoalIndex] = @Goal;
             }
             {
                     var @Baggage = newBaggageBuffer[originalNPCObject.BaggageIndex];
