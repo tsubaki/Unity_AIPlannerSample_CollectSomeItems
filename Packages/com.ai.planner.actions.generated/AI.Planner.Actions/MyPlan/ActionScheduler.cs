@@ -13,7 +13,7 @@ namespace AI.Planner.Actions.MyPlan
     public struct ActionScheduler :
         ITraitBasedActionScheduler<TraitBasedObject, StateEntityKey, StateData, StateDataContext, StateManager, ActionKey>
     {
-        public static readonly Guid MoveToGoalGuid = Guid.NewGuid();
+        public static readonly Guid MoveToGuid = Guid.NewGuid();
 
         // Input
         public NativeList<StateEntityKey> UnexpandedStates { get; set; }
@@ -34,21 +34,21 @@ namespace AI.Planner.Actions.MyPlan
             [ReadOnly]
             public NativeList<StateEntityKey> UnexpandedStates;
             public NativeQueue<StateTransitionInfoPair<StateEntityKey, ActionKey, StateTransitionInfo>> CreatedStateInfo;
-            public EntityCommandBuffer MoveToGoalECB;
+            public EntityCommandBuffer MoveToECB;
 
             public void Execute()
             {
                 // Playback entity changes and output state transition info
                 var entityManager = ExclusiveEntityTransaction;
 
-                MoveToGoalECB.Playback(entityManager);
+                MoveToECB.Playback(entityManager);
                 for (int i = 0; i < UnexpandedStates.Length; i++)
                 {
                     var stateEntity = UnexpandedStates[i].Entity;
-                    var MoveToGoalRefs = entityManager.GetBuffer<MoveToGoalFixupReference>(stateEntity);
-                    for (int j = 0; j < MoveToGoalRefs.Length; j++)
-                        CreatedStateInfo.Enqueue(MoveToGoalRefs[j].TransitionInfo);
-                    entityManager.RemoveComponent(stateEntity, typeof(MoveToGoalFixupReference));
+                    var MoveToRefs = entityManager.GetBuffer<MoveToFixupReference>(stateEntity);
+                    for (int j = 0; j < MoveToRefs.Length; j++)
+                        CreatedStateInfo.Enqueue(MoveToRefs[j].TransitionInfo);
+                    entityManager.RemoveComponent(stateEntity, typeof(MoveToFixupReference));
                 }
             }
         }
@@ -56,13 +56,13 @@ namespace AI.Planner.Actions.MyPlan
         public JobHandle Schedule(JobHandle inputDeps)
         {
             var entityManager = StateManager.EntityManager;
-            var MoveToGoalDataContext = StateManager.GetStateDataContext();
-            var MoveToGoalECB = StateManager.GetEntityCommandBuffer();
-            MoveToGoalDataContext.EntityCommandBuffer = MoveToGoalECB.ToConcurrent();
+            var MoveToDataContext = StateManager.GetStateDataContext();
+            var MoveToECB = StateManager.GetEntityCommandBuffer();
+            MoveToDataContext.EntityCommandBuffer = MoveToECB.ToConcurrent();
 
             var allActionJobs = new NativeArray<JobHandle>(2, Allocator.TempJob)
             {
-                [0] = new MoveToGoal(MoveToGoalGuid, UnexpandedStates, MoveToGoalDataContext).Schedule(UnexpandedStates, 0, inputDeps),
+                [0] = new MoveTo(MoveToGuid, UnexpandedStates, MoveToDataContext).Schedule(UnexpandedStates, 0, inputDeps),
                 [1] = entityManager.ExclusiveEntityTransactionDependency
             };
 
@@ -75,7 +75,7 @@ namespace AI.Planner.Actions.MyPlan
                 ExclusiveEntityTransaction = StateManager.ExclusiveEntityTransaction,
                 UnexpandedStates = UnexpandedStates,
                 CreatedStateInfo = m_CreatedStateInfo,
-                MoveToGoalECB = MoveToGoalECB,
+                MoveToECB = MoveToECB,
             };
 
             var playbackJobHandle = playbackJob.Schedule(allActionJobsHandle);

@@ -38,7 +38,7 @@ namespace AI.Planner.Actions.MyPlan
     {
         static Dictionary<Guid, string> s_ActionGuidToNameLookup = new Dictionary<Guid,string>()
         {
-            { ActionScheduler.MoveToGoalGuid, nameof(MoveToGoal) },
+            { ActionScheduler.MoveToGuid, nameof(MoveTo) },
         };
 
         public override string GetActionName(IActionKey actionKey)
@@ -60,8 +60,8 @@ namespace AI.Planner.Actions.MyPlan
 
             switch (actionKey.ActionGuid)
             {
-                case var actionGuid when actionGuid == ActionScheduler.MoveToGoalGuid:
-                    actionName = nameof(MoveToGoal);
+                case var actionGuid when actionGuid == ActionScheduler.MoveToGuid:
+                    actionName = nameof(MoveTo);
                     break;
             }
 
@@ -84,8 +84,8 @@ namespace AI.Planner.Actions.MyPlan
 
                 switch (actionName)
                 {
-                    case nameof(MoveToGoal):
-                        parameterIndex = MoveToGoal.GetIndexForParameterName(traitBasedObjectName);
+                    case nameof(MoveTo):
+                        parameterIndex = MoveTo.GetIndexForParameterName(traitBasedObjectName);
                         break;
                 }
 
@@ -101,6 +101,10 @@ namespace AI.Planner.Actions.MyPlan
                         case nameof(Location):
                             var traitLocation = stateData.GetTraitOnObjectAtIndex<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitLocation.GetField(split[2]) : traitLocation;
+                            break;
+                        case nameof(WayPoint):
+                            var traitWayPoint = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.WayPoint>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitWayPoint.GetField(split[2]) : traitWayPoint;
                             break;
                         case nameof(Goal):
                             var traitGoal = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Goal>(traitBasedObjectIndex);

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00e16f0575d73480ebe7b76bb4ae3939, type: 3}
-  m_Name: MoveToGoal
+  m_Name: MoveTo
   m_EditorClassIdentifier: 
   m_Parameters:
   - m_Name: NPC
@@ -18,10 +18,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3f130894604de4e62a1cc7081fbc60a2, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
     m_ProhibitedTraits: []
-  - m_Name: Goal
+  - m_Name: WayPoint
     m_RequiredTraits:
-    - {fileID: 11400000, guid: 72d29b6b5146b40cf9ffe7e5ac08e5fe, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
+    - {fileID: 11400000, guid: 046b0d4fe0f4b4c14abe48715c9278f2, type: 2}
     m_ProhibitedTraits: []
   m_Preconditions:
   - m_Operator: '!='
@@ -32,7 +32,7 @@ MonoBehaviour:
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
-      m_Parameter: Goal
+      m_Parameter: WayPoint
       m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
       m_TraitFieldId: 101
       m_Enum: {fileID: 0}
@@ -48,10 +48,10 @@ MonoBehaviour:
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
-      m_Parameter: Goal
+      m_Parameter: WayPoint
       m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
       m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
-  m_Reward: 0
+  m_Reward: -0.1
   m_CustomRewards: []
