@@ -17,7 +17,6 @@ MonoBehaviour:
     m_RequiredTraits:
     - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
-    - {fileID: 11400000, guid: 3f130894604de4e62a1cc7081fbc60a2, type: 2}
     m_ProhibitedTraits: []
   - m_Name: Item
     m_RequiredTraits:
