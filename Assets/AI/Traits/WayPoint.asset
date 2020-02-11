@@ -10,19 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4733c0880a5a0ce4f94cc97cb9b0049b, type: 3}
-  m_Name: Baggage
+  m_Name: WayPoint
   m_EditorClassIdentifier: 
   m_Namespace: 
-  m_Fields:
-  - m_UniqueId: 101
-    m_Name: HasItem
-    m_Type: System.Boolean
-    m_DefaultValue:
-      m_Name: 
-      m_BoolValue: 0
-      m_FloatValue: 0
-      m_IntValue: 0
-      m_StringValue: 
-      m_ObjectValue: {fileID: 0}
-    m_Restriction: 0
-  m_NextFieldUniqueId: 102
+  m_Fields: []
+  m_NextFieldUniqueId: 100

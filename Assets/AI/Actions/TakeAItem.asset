@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TakeAItem
   m_EditorClassIdentifier: 
   m_Parameters:
-  - m_Name: Buggage
+  - m_Name: NPC
     m_RequiredTraits:
     - {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
     - {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Preconditions:
   - m_Operator: ==
     m_OperandA:
-      m_Parameter: Buggage
+      m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 9d24b90158d644873a4d488182380074, type: 2}
       m_TraitFieldId: 101
       m_Enum: {fileID: 0}
@@ -40,9 +40,9 @@ MonoBehaviour:
       m_Value: 
   - m_Operator: ==
     m_OperandA:
-      m_Parameter: Buggage
+      m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
@@ -50,16 +50,16 @@ MonoBehaviour:
       m_Trait: {fileID: 0}
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
-      m_Value: 0
+      m_Value: false
   m_CreatedObjects: []
   m_RemovedObjects:
   - Item
   m_ObjectModifiers:
   - m_Operator: =
     m_OperandA:
-      m_Parameter: Buggage
+      m_Parameter: NPC
       m_Trait: {fileID: 11400000, guid: 531890f2973494d299a7b30190a77f43, type: 2}
-      m_TraitFieldId: 100
+      m_TraitFieldId: 101
       m_Enum: {fileID: 0}
       m_Value: 
     m_OperandB:
@@ -67,6 +67,6 @@ MonoBehaviour:
       m_Trait: {fileID: 0}
       m_TraitFieldId: 0
       m_Enum: {fileID: 0}
-      m_Value: 1
-  m_Reward: -0.1
+      m_Value: true
+  m_Reward: 0
   m_CustomRewards: []

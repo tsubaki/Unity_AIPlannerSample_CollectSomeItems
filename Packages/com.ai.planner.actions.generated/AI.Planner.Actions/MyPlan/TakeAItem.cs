@@ -14,7 +14,7 @@ namespace AI.Planner.Actions.MyPlan
     {
         public Guid ActionGuid;
         
-        const int k_BuggageIndex = 0;
+        const int k_NPCIndex = 0;
         const int k_ItemIndex = 1;
         const int k_MaxArguments = 2;
 
@@ -31,8 +31,8 @@ namespace AI.Planner.Actions.MyPlan
         public static int GetIndexForParameterName(string parameterName)
         {
             
-            if (string.Equals(parameterName, "Buggage", StringComparison.OrdinalIgnoreCase))
-                 return k_BuggageIndex;
+            if (string.Equals(parameterName, "NPC", StringComparison.OrdinalIgnoreCase))
+                 return k_NPCIndex;
             if (string.Equals(parameterName, "Item", StringComparison.OrdinalIgnoreCase))
                  return k_ItemIndex;
 
@@ -41,22 +41,22 @@ namespace AI.Planner.Actions.MyPlan
 
         void GenerateArgumentPermutations(StateData stateData, NativeList<ActionKey> argumentPermutations)
         {
-            var BuggageFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),  };
+            var NPCFilter = new NativeArray<ComponentType>(3, Allocator.Temp){[0] = ComponentType.ReadWrite<AI.Planner.Domains.Baggage>(),[1] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[2] = ComponentType.ReadWrite<AI.Planner.Domains.Npc>(),  };
             var ItemFilter = new NativeArray<ComponentType>(2, Allocator.Temp){[0] = ComponentType.ReadWrite<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(),[1] = ComponentType.ReadWrite<AI.Planner.Domains.Item>(),  };
-            var BuggageObjectIndices = new NativeList<int>(2, Allocator.Temp);
-            stateData.GetTraitBasedObjectIndices(BuggageObjectIndices, BuggageFilter);
+            var NPCObjectIndices = new NativeList<int>(2, Allocator.Temp);
+            stateData.GetTraitBasedObjectIndices(NPCObjectIndices, NPCFilter);
             var ItemObjectIndices = new NativeList<int>(2, Allocator.Temp);
             stateData.GetTraitBasedObjectIndices(ItemObjectIndices, ItemFilter);
             var LocationBuffer = stateData.LocationBuffer;
             var BaggageBuffer = stateData.BaggageBuffer;
             
-            for (int i0 = 0; i0 < BuggageObjectIndices.Length; i0++)
+            for (int i0 = 0; i0 < NPCObjectIndices.Length; i0++)
             {
-                var BuggageIndex = BuggageObjectIndices[i0];
-                var BuggageObject = stateData.TraitBasedObjects[BuggageIndex];
+                var NPCIndex = NPCObjectIndices[i0];
+                var NPCObject = stateData.TraitBasedObjects[NPCIndex];
                 
                 
-                if (!(BaggageBuffer[BuggageObject.BaggageIndex].ItemCount == 0))
+                if (!(BaggageBuffer[NPCObject.BaggageIndex].HasItem == false))
                     continue;
             
             for (int i1 = 0; i1 < ItemObjectIndices.Length; i1++)
@@ -64,21 +64,21 @@ namespace AI.Planner.Actions.MyPlan
                 var ItemIndex = ItemObjectIndices[i1];
                 var ItemObject = stateData.TraitBasedObjects[ItemIndex];
                 
-                if (!(LocationBuffer[BuggageObject.LocationIndex].Position == LocationBuffer[ItemObject.LocationIndex].Position))
+                if (!(LocationBuffer[NPCObject.LocationIndex].Position == LocationBuffer[ItemObject.LocationIndex].Position))
                     continue;
                 
 
                 var actionKey = new ActionKey(k_MaxArguments) {
                                                         ActionGuid = ActionGuid,
-                                                       [k_BuggageIndex] = BuggageIndex,
+                                                       [k_NPCIndex] = NPCIndex,
                                                        [k_ItemIndex] = ItemIndex,
                                                     };
                 argumentPermutations.Add(actionKey);
             }
             }
-            BuggageObjectIndices.Dispose();
+            NPCObjectIndices.Dispose();
             ItemObjectIndices.Dispose();
-            BuggageFilter.Dispose();
+            NPCFilter.Dispose();
             ItemFilter.Dispose();
         }
 
@@ -86,14 +86,14 @@ namespace AI.Planner.Actions.MyPlan
         {
             var originalState = m_StateDataContext.GetStateData(originalStateEntityKey);
             var originalStateObjectBuffer = originalState.TraitBasedObjects;
-            var originalBuggageObject = originalStateObjectBuffer[action[k_BuggageIndex]];
+            var originalNPCObject = originalStateObjectBuffer[action[k_NPCIndex]];
 
             var newState = m_StateDataContext.CopyStateData(originalState);
             var newBaggageBuffer = newState.BaggageBuffer;
             {
-                    var @Baggage = newBaggageBuffer[originalBuggageObject.BaggageIndex];
-                    @Baggage.@ItemCount = 1;
-                    newBaggageBuffer[originalBuggageObject.BaggageIndex] = @Baggage;
+                    var @Baggage = newBaggageBuffer[originalNPCObject.BaggageIndex];
+                    @Baggage.@HasItem = true;
+                    newBaggageBuffer[originalNPCObject.BaggageIndex] = @Baggage;
             }
 
             
@@ -108,7 +108,7 @@ namespace AI.Planner.Actions.MyPlan
 
         float Reward(StateData originalState, ActionKey action, StateData newState)
         {
-            var reward = -0.1f;
+            var reward = 0f;
 
             return reward;
         }
@@ -139,9 +139,9 @@ namespace AI.Planner.Actions.MyPlan
         }
 
         
-        public static T GetBuggageTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
+        public static T GetNPCTrait<T>(StateData state, ActionKey action) where T : struct, ITrait
         {
-            return state.GetTraitOnObjectAtIndex<T>(action[k_BuggageIndex]);
+            return state.GetTraitOnObjectAtIndex<T>(action[k_NPCIndex]);
         }
         
         public static T GetItemTrait<T>(StateData state, ActionKey action) where T : struct, ITrait

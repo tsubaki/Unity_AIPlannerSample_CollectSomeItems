@@ -7,15 +7,15 @@ namespace AI.Planner.Domains
     [Serializable]
     public struct Baggage : ITrait, IEquatable<Baggage>
     {
-        public const string FieldItemCount = "ItemCount";
-        public System.Int32 ItemCount;
+        public const string FieldHasItem = "HasItem";
+        public System.Boolean HasItem;
 
         public void SetField(string fieldName, object value)
         {
             switch (fieldName)
             {
-                case nameof(ItemCount):
-                    ItemCount = (System.Int32)value;
+                case nameof(HasItem):
+                    HasItem = (System.Boolean)value;
                     break;
                 default:
                     throw new ArgumentException($"Field \"{fieldName}\" does not exist on trait Baggage.");
@@ -26,8 +26,8 @@ namespace AI.Planner.Domains
         {
             switch (fieldName)
             {
-                case nameof(ItemCount):
-                    return ItemCount;
+                case nameof(HasItem):
+                    return HasItem;
                 default:
                     throw new ArgumentException($"Field \"{fieldName}\" does not exist on trait Baggage.");
             }
@@ -35,12 +35,12 @@ namespace AI.Planner.Domains
 
         public bool Equals(Baggage other)
         {
-            return ItemCount == other.ItemCount;
+            return HasItem == other.HasItem;
         }
 
         public override string ToString()
         {
-            return $"Baggage: {ItemCount}";
+            return $"Baggage: {HasItem}";
         }
     }
 }

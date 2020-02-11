@@ -5,7 +5,7 @@ using Unity.AI.Planner.DomainLanguage.TraitBased;
 namespace AI.Planner.Domains
 {
     [Serializable]
-    public struct Goal : ITrait, IEquatable<Goal>
+    public struct WayPoint : ITrait, IEquatable<WayPoint>
     {
 
         public void SetField(string fieldName, object value)
@@ -14,17 +14,17 @@ namespace AI.Planner.Domains
 
         public object GetField(string fieldName)
         {
-            throw new ArgumentException("No fields exist on trait Goal.");
+            throw new ArgumentException("No fields exist on trait WayPoint.");
         }
 
-        public bool Equals(Goal other)
+        public bool Equals(WayPoint other)
         {
             return true;
         }
 
         public override string ToString()
         {
-            return $"Goal";
+            return $"WayPoint";
         }
     }
 }
