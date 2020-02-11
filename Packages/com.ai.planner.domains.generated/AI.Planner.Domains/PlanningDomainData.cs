@@ -39,16 +39,18 @@ namespace AI.Planner.Domains
                 Index = 2;
             else if (typeIndex == TypeManager.GetTypeIndex<Npc>())
                 Index = 3;
-            else if (typeIndex == TypeManager.GetTypeIndex<Location>())
+            else if (typeIndex == TypeManager.GetTypeIndex<WayPoint>())
                 Index = 4;
-            else if (typeIndex == TypeManager.GetTypeIndex<Moveable>())
+            else if (typeIndex == TypeManager.GetTypeIndex<Location>())
                 Index = 5;
+            else if (typeIndex == TypeManager.GetTypeIndex<Moveable>())
+                Index = 6;
         }
     }
 
     public struct TraitBasedObject : ITraitBasedObject
     {
-        public int Length => 6;
+        public int Length => 7;
 
         public byte this[int i]
         {
@@ -65,8 +67,10 @@ namespace AI.Planner.Domains
                     case 3:
                         return NpcIndex;
                     case 4:
-                        return LocationIndex;
+                        return WayPointIndex;
                     case 5:
+                        return LocationIndex;
+                    case 6:
                         return MoveableIndex;
                 }
 
@@ -89,9 +93,12 @@ namespace AI.Planner.Domains
                         NpcIndex = value;
                         break;
                     case 4:
-                        LocationIndex = value;
+                        WayPointIndex = value;
                         break;
                     case 5:
+                        LocationIndex = value;
+                        break;
+                    case 6:
                         MoveableIndex = value;
                         break;
                 }
@@ -106,6 +113,7 @@ namespace AI.Planner.Domains
             GoalIndex = Unset,
             ItemIndex = Unset,
             NpcIndex = Unset,
+            WayPointIndex = Unset,
             LocationIndex = Unset,
             MoveableIndex = Unset,
         };
@@ -115,6 +123,7 @@ namespace AI.Planner.Domains
         public byte GoalIndex;
         public byte ItemIndex;
         public byte NpcIndex;
+        public byte WayPointIndex;
         public byte LocationIndex;
         public byte MoveableIndex;
 
@@ -123,6 +132,7 @@ namespace AI.Planner.Domains
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
         static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
+        static readonly int s_WayPointTypeIndex = TypeManager.GetTypeIndex<WayPoint>();
         static readonly int s_LocationTypeIndex = TypeManager.GetTypeIndex<Location>();
         static readonly int s_MoveableTypeIndex = TypeManager.GetTypeIndex<Moveable>();
 
@@ -176,6 +186,11 @@ namespace AI.Planner.Domains
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ NpcIndex == Unset)
                         return false;
                 }
+                else if (t.TypeIndex == s_WayPointTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ WayPointIndex == Unset)
+                        return false;
+                }
                 else if (t.TypeIndex == s_LocationTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ LocationIndex == Unset)
@@ -219,6 +234,11 @@ namespace AI.Planner.Domains
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ NpcIndex == Unset)
                         return false;
                 }
+                else if (t.TypeIndex == s_WayPointTypeIndex)
+                {
+                    if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ WayPointIndex == Unset)
+                        return false;
+                }
                 else if (t.TypeIndex == s_LocationTypeIndex)
                 {
                     if (t.AccessModeType == ComponentType.AccessMode.Exclude ^ LocationIndex == Unset)
@@ -247,6 +267,7 @@ namespace AI.Planner.Domains
         public DynamicBuffer<Goal> GoalBuffer;
         public DynamicBuffer<Item> ItemBuffer;
         public DynamicBuffer<Npc> NpcBuffer;
+        public DynamicBuffer<WayPoint> WayPointBuffer;
         public DynamicBuffer<Location> LocationBuffer;
         public DynamicBuffer<Moveable> MoveableBuffer;
 
@@ -254,6 +275,7 @@ namespace AI.Planner.Domains
         static readonly int s_GoalTypeIndex = TypeManager.GetTypeIndex<Goal>();
         static readonly int s_ItemTypeIndex = TypeManager.GetTypeIndex<Item>();
         static readonly int s_NpcTypeIndex = TypeManager.GetTypeIndex<Npc>();
+        static readonly int s_WayPointTypeIndex = TypeManager.GetTypeIndex<WayPoint>();
         static readonly int s_LocationTypeIndex = TypeManager.GetTypeIndex<Location>();
         static readonly int s_MoveableTypeIndex = TypeManager.GetTypeIndex<Moveable>();
 
@@ -267,6 +289,7 @@ namespace AI.Planner.Domains
             GoalBuffer = system.GetBufferFromEntity<Goal>(!readWrite)[stateEntity];
             ItemBuffer = system.GetBufferFromEntity<Item>(!readWrite)[stateEntity];
             NpcBuffer = system.GetBufferFromEntity<Npc>(!readWrite)[stateEntity];
+            WayPointBuffer = system.GetBufferFromEntity<WayPoint>(!readWrite)[stateEntity];
             LocationBuffer = system.GetBufferFromEntity<Location>(!readWrite)[stateEntity];
             MoveableBuffer = system.GetBufferFromEntity<Moveable>(!readWrite)[stateEntity];
         }
@@ -281,6 +304,7 @@ namespace AI.Planner.Domains
             GoalBuffer = entityCommandBuffer.AddBuffer<Goal>(jobIndex, stateEntity);
             ItemBuffer = entityCommandBuffer.AddBuffer<Item>(jobIndex, stateEntity);
             NpcBuffer = entityCommandBuffer.AddBuffer<Npc>(jobIndex, stateEntity);
+            WayPointBuffer = entityCommandBuffer.AddBuffer<WayPoint>(jobIndex, stateEntity);
             LocationBuffer = entityCommandBuffer.AddBuffer<Location>(jobIndex, stateEntity);
             MoveableBuffer = entityCommandBuffer.AddBuffer<Moveable>(jobIndex, stateEntity);
         }
@@ -301,6 +325,8 @@ namespace AI.Planner.Domains
             Items.CopyFrom(ItemBuffer.AsNativeArray());
             var Npcs = entityCommandBuffer.SetBuffer<Npc>(jobIndex, stateEntity);
             Npcs.CopyFrom(NpcBuffer.AsNativeArray());
+            var WayPoints = entityCommandBuffer.SetBuffer<WayPoint>(jobIndex, stateEntity);
+            WayPoints.CopyFrom(WayPointBuffer.AsNativeArray());
             var Locations = entityCommandBuffer.SetBuffer<Location>(jobIndex, stateEntity);
             Locations.CopyFrom(LocationBuffer.AsNativeArray());
             var Moveables = entityCommandBuffer.SetBuffer<Moveable>(jobIndex, stateEntity);
@@ -316,6 +342,7 @@ namespace AI.Planner.Domains
                 GoalBuffer = Goals,
                 ItemBuffer = Items,
                 NpcBuffer = Npcs,
+                WayPointBuffer = WayPoints,
                 LocationBuffer = Locations,
                 MoveableBuffer = Moveables,
             };
@@ -352,6 +379,11 @@ namespace AI.Planner.Domains
                     NpcBuffer.Add(default);
                     traitBasedObject.NpcIndex = (byte) (NpcBuffer.Length - 1);
                 }
+                else if (t.TypeIndex == s_WayPointTypeIndex)
+                {
+                    WayPointBuffer.Add(default);
+                    traitBasedObject.WayPointIndex = (byte) (WayPointBuffer.Length - 1);
+                }
                 else if (t.TypeIndex == s_LocationTypeIndex)
                 {
                     LocationBuffer.Add(default);
@@ -384,6 +416,8 @@ namespace AI.Planner.Domains
                 SetTraitOnObject(ItemTrait, ref traitBasedObject);
             else if (trait is Npc NpcTrait)
                 SetTraitOnObject(NpcTrait, ref traitBasedObject);
+            else if (trait is WayPoint WayPointTrait)
+                SetTraitOnObject(WayPointTrait, ref traitBasedObject);
             else if (trait is Location LocationTrait)
                 SetTraitOnObject(LocationTrait, ref traitBasedObject);
             else if (trait is Moveable MoveableTrait)
@@ -484,6 +518,7 @@ namespace AI.Planner.Domains
             RemoveTraitOnObject<Goal>(ref traitBasedObject);
             RemoveTraitOnObject<Item>(ref traitBasedObject);
             RemoveTraitOnObject<Npc>(ref traitBasedObject);
+            RemoveTraitOnObject<WayPoint>(ref traitBasedObject);
             RemoveTraitOnObject<Location>(ref traitBasedObject);
             RemoveTraitOnObject<Moveable>(ref traitBasedObject);
 
@@ -573,6 +608,7 @@ namespace AI.Planner.Domains
             RemoveTraitOnObjectAtIndex<Goal>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Item>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Npc>(traitBasedObjectIndex);
+            RemoveTraitOnObjectAtIndex<WayPoint>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Location>(traitBasedObjectIndex);
             RemoveTraitOnObjectAtIndex<Moveable>(traitBasedObjectIndex);
 
@@ -672,8 +708,10 @@ namespace AI.Planner.Domains
                 case 3:
                     return NpcBuffer.Reinterpret<T>();
                 case 4:
-                    return LocationBuffer.Reinterpret<T>();
+                    return WayPointBuffer.Reinterpret<T>();
                 case 5:
+                    return LocationBuffer.Reinterpret<T>();
+                case 6:
                     return MoveableBuffer.Reinterpret<T>();
             }
 
@@ -691,6 +729,7 @@ namespace AI.Planner.Domains
                 || GoalBuffer.Length != rhsState.GoalBuffer.Length
                 || ItemBuffer.Length != rhsState.ItemBuffer.Length
                 || NpcBuffer.Length != rhsState.NpcBuffer.Length
+                || WayPointBuffer.Length != rhsState.WayPointBuffer.Length
                 || LocationBuffer.Length != rhsState.LocationBuffer.Length
                 || MoveableBuffer.Length != rhsState.MoveableBuffer.Length)
                 return false;
@@ -774,6 +813,7 @@ namespace AI.Planner.Domains
 
 
 
+
             if (traitBasedObjectLHS.LocationIndex != TraitBasedObject.Unset
                 && !LocationTraitAttributesEqual(LocationBuffer[traitBasedObjectLHS.LocationIndex], rhsState.LocationBuffer[traitBasedObjectRHS.LocationIndex]))
                 return false;
@@ -840,6 +880,12 @@ namespace AI.Planner.Domains
                 var value = 397;
                 stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
             }
+            for (int i = 0; i < WayPointBuffer.Length; i++)
+            {
+                var element = WayPointBuffer[i];
+                var value = 397;
+                stateHashValue = 3860031 + (stateHashValue + value) * 2779 + (stateHashValue * value * 2);
+            }
             for (int i = 0; i < LocationBuffer.Length; i++)
             {
                 var element = LocationBuffer[i];
@@ -887,6 +933,10 @@ namespace AI.Planner.Domains
 
                 traitIndex = traitBasedObject[i++];
                 if (traitIndex != TraitBasedObject.Unset)
+                    sb.AppendLine(WayPointBuffer[traitIndex].ToString());
+
+                traitIndex = traitBasedObject[i++];
+                if (traitIndex != TraitBasedObject.Unset)
                     sb.AppendLine(LocationBuffer[traitIndex].ToString());
 
                 traitIndex = traitBasedObject[i++];
@@ -913,6 +963,7 @@ namespace AI.Planner.Domains
         [ReadOnly] public BufferFromEntity<Goal> GoalData;
         [ReadOnly] public BufferFromEntity<Item> ItemData;
         [ReadOnly] public BufferFromEntity<Npc> NpcData;
+        [ReadOnly] public BufferFromEntity<WayPoint> WayPointData;
         [ReadOnly] public BufferFromEntity<Location> LocationData;
         [ReadOnly] public BufferFromEntity<Moveable> MoveableData;
 
@@ -926,6 +977,7 @@ namespace AI.Planner.Domains
             GoalData = system.GetBufferFromEntity<Goal>(true);
             ItemData = system.GetBufferFromEntity<Item>(true);
             NpcData = system.GetBufferFromEntity<Npc>(true);
+            WayPointData = system.GetBufferFromEntity<WayPoint>(true);
             LocationData = system.GetBufferFromEntity<Location>(true);
             MoveableData = system.GetBufferFromEntity<Moveable>(true);
 
@@ -947,6 +999,7 @@ namespace AI.Planner.Domains
                 GoalBuffer = GoalData[stateEntity],
                 ItemBuffer = ItemData[stateEntity],
                 NpcBuffer = NpcData[stateEntity],
+                WayPointBuffer = WayPointData[stateEntity],
                 LocationBuffer = LocationData[stateEntity],
                 MoveableBuffer = MoveableData[stateEntity],
             };
@@ -999,6 +1052,7 @@ namespace AI.Planner.Domains
                 typeof(Goal),
                 typeof(Item),
                 typeof(Npc),
+                typeof(WayPoint),
                 typeof(Location),
                 typeof(Moveable));
 

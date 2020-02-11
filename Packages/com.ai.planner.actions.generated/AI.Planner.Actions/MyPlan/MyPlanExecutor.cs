@@ -38,9 +38,8 @@ namespace AI.Planner.Actions.MyPlan
     {
         static Dictionary<Guid, string> s_ActionGuidToNameLookup = new Dictionary<Guid,string>()
         {
-            { ActionScheduler.MoveToItemGuid, nameof(MoveToItem) },
             { ActionScheduler.TakeAItemGuid, nameof(TakeAItem) },
-            { ActionScheduler.MoveToGoalGuid, nameof(MoveToGoal) },
+            { ActionScheduler.MoveToGuid, nameof(MoveTo) },
         };
 
         public override string GetActionName(IActionKey actionKey)
@@ -62,14 +61,11 @@ namespace AI.Planner.Actions.MyPlan
 
             switch (actionKey.ActionGuid)
             {
-                case var actionGuid when actionGuid == ActionScheduler.MoveToItemGuid:
-                    actionName = nameof(MoveToItem);
-                    break;
                 case var actionGuid when actionGuid == ActionScheduler.TakeAItemGuid:
                     actionName = nameof(TakeAItem);
                     break;
-                case var actionGuid when actionGuid == ActionScheduler.MoveToGoalGuid:
-                    actionName = nameof(MoveToGoal);
+                case var actionGuid when actionGuid == ActionScheduler.MoveToGuid:
+                    actionName = nameof(MoveTo);
                     break;
             }
 
@@ -92,14 +88,11 @@ namespace AI.Planner.Actions.MyPlan
 
                 switch (actionName)
                 {
-                    case nameof(MoveToItem):
-                        parameterIndex = MoveToItem.GetIndexForParameterName(traitBasedObjectName);
-                        break;
                     case nameof(TakeAItem):
                         parameterIndex = TakeAItem.GetIndexForParameterName(traitBasedObjectName);
                         break;
-                    case nameof(MoveToGoal):
-                        parameterIndex = MoveToGoal.GetIndexForParameterName(traitBasedObjectName);
+                    case nameof(MoveTo):
+                        parameterIndex = MoveTo.GetIndexForParameterName(traitBasedObjectName);
                         break;
                 }
 
@@ -108,21 +101,25 @@ namespace AI.Planner.Actions.MyPlan
                 {
                     switch (split[1])
                     {
-                        case nameof(Npc):
-                            var traitNpc = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Npc>(traitBasedObjectIndex);
-                            arguments[i] = split.Length == 3 ? traitNpc.GetField(split[2]) : traitNpc;
+                        case nameof(Baggage):
+                            var traitBaggage = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Baggage>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitBaggage.GetField(split[2]) : traitBaggage;
                             break;
                         case nameof(Location):
                             var traitLocation = stateData.GetTraitOnObjectAtIndex<Unity.AI.Planner.DomainLanguage.TraitBased.Location>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitLocation.GetField(split[2]) : traitLocation;
                             break;
-                        case nameof(Baggage):
-                            var traitBaggage = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Baggage>(traitBasedObjectIndex);
-                            arguments[i] = split.Length == 3 ? traitBaggage.GetField(split[2]) : traitBaggage;
-                            break;
                         case nameof(Item):
                             var traitItem = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Item>(traitBasedObjectIndex);
                             arguments[i] = split.Length == 3 ? traitItem.GetField(split[2]) : traitItem;
+                            break;
+                        case nameof(Npc):
+                            var traitNpc = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Npc>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitNpc.GetField(split[2]) : traitNpc;
+                            break;
+                        case nameof(WayPoint):
+                            var traitWayPoint = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.WayPoint>(traitBasedObjectIndex);
+                            arguments[i] = split.Length == 3 ? traitWayPoint.GetField(split[2]) : traitWayPoint;
                             break;
                         case nameof(Goal):
                             var traitGoal = stateData.GetTraitOnObjectAtIndex<AI.Planner.Domains.Goal>(traitBasedObjectIndex);
